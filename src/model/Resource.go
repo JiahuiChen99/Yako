@@ -1,8 +1,8 @@
 package model
 
 type Resource struct {
-	cpus int
-	gpus int
-	mem  int
-	disk int
+	Cpus int `json:"cpus"`
+	Gpus int `json:"gpus"`
+	Mem  int `json:"mem"`
+	Disk int `json:"disk"`
 }

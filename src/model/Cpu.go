@@ -70,9 +70,19 @@ func (c *Cpu) GetResources() []Cpu {
 					panic("Error while parsing CPU 'core id' field ")
 				}
 
+				tmpCore.CoreID = uint(coreID)
+
+			case "power management":
+				// Store data after parsing the last property
+				saveCPU(cpusList, cpusCount, tmpCore)
 			}
 		}
 	}
 
 	return cpusList
+}
+
+// saveCPU Stores a CPU data if everything is parsed
+func saveCPU(cpuList []Cpu, cpusCount int, tmpCores Core) {
+	cpuList[cpusCount].Cores = append(cpuList[cpusCount].Cores, tmpCores)
 }

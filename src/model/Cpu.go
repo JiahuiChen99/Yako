@@ -44,16 +44,15 @@ func (c *Cpu) GetResources() {
 		// Split each row and get the column name
 		if scannerLine := twoColRegex.Split(scanner.Text(), 2); scannerLine != nil {
 			switch scannerLine[0] {
-			// CPU ID
-			case "physical id":
+			case "model name":
 
 			case "cpu cores":
 
+			case "physical id":
+
+			case "processor":
+
 			case "core id":
-
-			case "cache size":
-
-			case "model name":
 
 			}
 		}

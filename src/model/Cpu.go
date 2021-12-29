@@ -6,6 +6,13 @@ import (
 	"regexp"
 )
 
+// Core
+// Representation of a CPU core
+type Core struct {
+	Processor uint `json:"processor"` // "processor" field
+	CoreID    uint `json:"coreID"`    // "core id" field
+}
+
 // Cpu
 //Representation of a processor modeled after /proc/cpuinfo
 type Cpu struct {

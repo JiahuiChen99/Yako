@@ -44,6 +44,8 @@ func (c *Cpu) GetResources() []Cpu {
 	cpusList := make([]Cpu, 1)
 	cpusCount := 0
 	var tmpCore Core
+	cpuModel := ""
+	cpuCores, socket := 0, 0
 
 	// Scan the file line by line
 	for scanner.Scan() {
@@ -51,11 +53,17 @@ func (c *Cpu) GetResources() []Cpu {
 		if scannerLine := twoColRegex.Split(scanner.Text(), 2); scannerLine != nil {
 			switch scannerLine[0] {
 			case "model name":
-
+				cpuModel = scannerLine[1]
 			case "cpu cores":
-
+				cpuCores, err = strconv.Atoi(scannerLine[1])
+				if err != nil {
+					panic("Error while parsing CPU 'cpu cores' field ")
+				}
 			case "physical id":
-
+				socket, err = strconv.Atoi(scannerLine[1])
+				if err != nil {
+					panic("Error while parsing CPU 'cpu cores' field ")
+				}
 			case "processor":
 				processor, err := strconv.Atoi(scannerLine[1])
 				if err != nil {
@@ -74,7 +82,7 @@ func (c *Cpu) GetResources() []Cpu {
 
 			case "power management":
 				// Store data after parsing the last property
-				saveCPU(cpusList, cpusCount, tmpCore)
+				saveCPU(cpusList, cpusCount, cpuModel, cpuCores, socket, tmpCore)
 			}
 		}
 	}
@@ -83,6 +91,6 @@ func (c *Cpu) GetResources() []Cpu {
 }
 
 // saveCPU Stores a CPU data if everything is parsed
-func saveCPU(cpuList []Cpu, cpusCount int, tmpCores Core) {
+func saveCPU(cpuList []Cpu, cpusCount int, cpuModel string, cpuCores int, socket int, tmpCores Core) {
 	cpuList[cpusCount].Cores = append(cpuList[cpusCount].Cores, tmpCores)
 }

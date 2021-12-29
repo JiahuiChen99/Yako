@@ -14,11 +14,12 @@ type Core struct {
 }
 
 // Cpu
-//Representation of a processor modeled after /proc/cpuinfo
+// Representation of a processor modeled after /proc/cpuinfo
 type Cpu struct {
-	Id     uint `json:"id"`
-	Core   uint `json:"core"`
-	Socket uint `json:"socket"`
+	CpuName  string `json:"cpuName"`  // CPU model name
+	CpuCores string `json:"cpuCores"` // Number of CPU cores
+	Socket   uint   `json:"socket"`   // "physical id" for multiprocessor systems
+	Cores    []Core `json:"cores"`
 }
 
 var (

@@ -24,7 +24,7 @@ type Cpu struct {
 }
 
 var (
-	twoColRegex = regexp.MustCompile("(\t+)?: ")
+	twoColRegex = regexp.MustCompile("(\t+)?: ?")
 )
 
 // GetResources Retrieves information related to the system cpu

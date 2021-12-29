@@ -65,6 +65,10 @@ func (c *Cpu) GetResources() []Cpu {
 				tmpCore.Processor = uint(processor)
 
 			case "core id":
+				coreID, err := strconv.Atoi(scannerLine[1])
+				if err != nil {
+					panic("Error while parsing CPU 'core id' field ")
+				}
 
 			}
 		}

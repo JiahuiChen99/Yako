@@ -6,5 +6,5 @@ import (
 
 func main() {
 	cpu := model.Cpu{}
-	cpu.GetResources()
+	cpuList := cpu.GetResources()
 }

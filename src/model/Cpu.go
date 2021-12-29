@@ -28,7 +28,7 @@ var (
 
 // GetResources Retrieves information related to the system cpu
 // currently only Linux is supported
-func (c *Cpu) GetResources() {
+func (c *Cpu) GetResources() []Cpu {
 	// Open the file
 	f, err := os.Open("/proc/cpuinfo")
 	if err != nil {
@@ -57,4 +57,6 @@ func (c *Cpu) GetResources() {
 			}
 		}
 	}
+
+	return cpusList
 }

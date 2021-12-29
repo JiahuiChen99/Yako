@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"regexp"
+	"strconv"
 )
 
 // Core
@@ -39,6 +40,11 @@ func (c *Cpu) GetResources() []Cpu {
 
 	scanner := bufio.NewScanner(f)
 
+	// Create a CPU slice for multiprocessor devices
+	cpusList := make([]Cpu, 1)
+	cpusCount := 0
+	var tmpCore Core
+
 	// Scan the file line by line
 	for scanner.Scan() {
 		// Split each row and get the column name
@@ -51,6 +57,12 @@ func (c *Cpu) GetResources() []Cpu {
 			case "physical id":
 
 			case "processor":
+				processor, err := strconv.Atoi(scannerLine[1])
+				if err != nil {
+					panic("Error while parsing CPU 'processor' field ")
+				}
+
+				tmpCore.Processor = uint(processor)
 
 			case "core id":
 

@@ -29,7 +29,7 @@ var (
 
 // GetResources Retrieves information related to the system cpu
 // currently only Linux is supported
-func (c *Cpu) GetResources() []Cpu {
+func (c *Cpu) GetResources() interface{} {
 	// Open the file
 	f, err := os.Open("/proc/cpuinfo")
 	if err != nil {

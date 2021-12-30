@@ -3,6 +3,7 @@ package model
 import (
 	"bufio"
 	"os"
+	"regexp"
 )
 
 // Gpu
@@ -11,6 +12,10 @@ type Gpu struct {
 	Major uint `json:"major"`
 	Minor uint `json:"minor"`
 }
+
+var (
+	twoColRegexGPU = regexp.MustCompile(":( +)?(\t+)?( +)?")
+)
 
 func (g Gpu) GetResources() interface{} {
 	// Check if Nvidia drivers are installed

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bufio"
 	"os"
 )
 
@@ -31,7 +32,17 @@ func (g Gpu) GetResources() interface{} {
 
 	// Get GPU directories names (multi-gpu support)
 	for _, file := range gpusDirFiles {
+		f, err := os.Open("/proc/driver/nvidia/gpus/" + file.Name() + "/information")
+		if err != nil {
+			panic("Failed to open /proc/driver/nvidia/gpus/" + file.Name() + "/information")
+		}
 
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+
+		}
+
+		f.Close()
 	}
 
 	return nil

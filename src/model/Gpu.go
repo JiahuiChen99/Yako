@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"regexp"
+	"strconv"
 )
 
 // Gpu
@@ -39,11 +40,19 @@ func (g Gpu) GetResources() interface{} {
 	}
 	gpusDir.Close()
 
+	// Create a GPU slice for multi-GPU devices
+	gpuList := make([]Gpu, 1)
+
 	// Get GPU directories names (multi-gpu support)
-	for _, file := range gpusDirFiles {
+	for gpusCount, file := range gpusDirFiles {
 		f, err := os.Open("/proc/driver/nvidia/gpus/" + file.Name() + "/information")
 		if err != nil {
 			panic("Failed to open /proc/driver/nvidia/gpus/" + file.Name() + "/information")
+		}
+
+		// Add new GPU if there's multiple
+		if gpusCount >= 1 {
+			gpuList = append(gpuList, Gpu{})
 		}
 
 		scanner := bufio.NewScanner(f)
@@ -51,15 +60,23 @@ func (g Gpu) GetResources() interface{} {
 			if scannerLine := twoColRegexGPU.Split(scanner.Text(), 2); scannerLine != nil {
 				switch scannerLine[0] {
 				case "Model":
-
+					gpuList[gpusCount].GpuName = scannerLine[1]
 				case "GPU UUID":
-
+					gpuList[gpusCount].GpuID = scannerLine[1]
 				case "Bus Location":
-
+					gpuList[gpusCount].BusID = scannerLine[1]
 				case "Device Minor":
-
+					minorNumber, err := strconv.Atoi(scannerLine[1])
+					if err != nil {
+						panic("Error while parsing GPU 'Device Minor'")
+					}
+					gpuList[gpusCount].Minor = uint(minorNumber)
 				case "IRQ":
-
+					irqNumber, err := strconv.Atoi(scannerLine[1])
+					if err != nil {
+						panic("Error while parsing GPU 'IRQ'")
+					}
+					gpuList[gpusCount].IRQ = uint(irqNumber)
 				}
 			}
 		}
@@ -67,5 +84,5 @@ func (g Gpu) GetResources() interface{} {
 		f.Close()
 	}
 
-	return nil
+	return gpuList
 }

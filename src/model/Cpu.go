@@ -97,6 +97,14 @@ func (c *Cpu) GetResources() []Cpu {
 }
 
 // saveCPU Stores a CPU data if everything is parsed
+// It takes the current cpu listing 'cpuList' and stores general information { 'cpuModel', 'cpuCores', 'socket' }
+// as well as per-core information from 'tmpCores'
 func saveCPU(cpuList []Cpu, cpusCount int, cpuModel string, cpuCores int, socket int, tmpCores Core) {
+	// Store general CPU general information
+	cpuList[cpusCount].CpuName = cpuModel
+	cpuList[cpusCount].CpuCores = uint(cpuCores)
+	cpuList[cpusCount].Socket = uint(socket)
+
+	// Store CPU cores information
 	cpuList[cpusCount].Cores = append(cpuList[cpusCount].Cores, tmpCores)
 }

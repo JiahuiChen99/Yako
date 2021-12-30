@@ -9,8 +9,12 @@ import (
 // Gpu
 // Abstraction of a GPU
 type Gpu struct {
-	Major uint `json:"major"`
-	Minor uint `json:"minor"`
+	GpuName string `json:"gpuName"` // GPU model name
+	GpuID   string `json:"gpuID"`   // "GPU UUID"
+	BusID   string `json:"busID"`   // "Bus Location" PCIe bus ID
+	IRQ     uint   `json:"IRQ"`     // "IRQ" GPU Interrupt lane
+	Major   uint   `json:"major"`   //
+	Minor   uint   `json:"minor"`   // "Device Minor" for /dev/nvidia<minor> character device
 }
 
 var (

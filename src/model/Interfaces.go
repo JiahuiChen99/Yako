@@ -1,5 +1,5 @@
 package model
 
 type Resources interface {
-	GetResources()
+	GetResources() []Cpu
 }

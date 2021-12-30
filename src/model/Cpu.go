@@ -53,6 +53,12 @@ func (c *Cpu) GetResources() []Cpu {
 		if scannerLine := twoColRegex.Split(scanner.Text(), 2); scannerLine != nil {
 			switch scannerLine[0] {
 			case "model name":
+				// Add new CPU if there's a new CPU
+				if cpuModel != scannerLine[1] && cpuModel != "" {
+					cpusCount++
+					cpusList = append(cpusList, Cpu{})
+				}
+
 				cpuModel = scannerLine[1]
 			case "cpu cores":
 				cpuCores, err = strconv.Atoi(scannerLine[1])

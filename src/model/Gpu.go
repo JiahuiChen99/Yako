@@ -44,7 +44,20 @@ func (g Gpu) GetResources() interface{} {
 
 		scanner := bufio.NewScanner(f)
 		for scanner.Scan() {
+			if scannerLine := twoColRegexGPU.Split(scanner.Text(), 2); scannerLine != nil {
+				switch scannerLine[0] {
+				case "Model":
 
+				case "GPU UUID":
+
+				case "Bus Location":
+
+				case "Device Minor":
+
+				case "IRQ":
+
+				}
+			}
 		}
 
 		f.Close()

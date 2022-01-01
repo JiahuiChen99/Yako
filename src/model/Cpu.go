@@ -24,12 +24,12 @@ type Cpu struct {
 }
 
 var (
-	twoColRegex = regexp.MustCompile("(\t+)?: ?")
+	twoColRegexCPU = regexp.MustCompile("(\t+)?: ?")
 )
 
 // GetResources Retrieves information related to the system cpu
 // currently only Linux is supported
-func (c *Cpu) GetResources() []Cpu {
+func (c *Cpu) GetResources() interface{} {
 	// Open the file
 	f, err := os.Open("/proc/cpuinfo")
 	if err != nil {
@@ -50,7 +50,7 @@ func (c *Cpu) GetResources() []Cpu {
 	// Scan the file line by line
 	for scanner.Scan() {
 		// Split each row and get the column name
-		if scannerLine := twoColRegex.Split(scanner.Text(), 2); scannerLine != nil {
+		if scannerLine := twoColRegexCPU.Split(scanner.Text(), 2); scannerLine != nil {
 			switch scannerLine[0] {
 			case "model name":
 				// Add new CPU if there's a new CPU

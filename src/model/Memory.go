@@ -11,6 +11,10 @@ type Memory struct {
 	FreeSwap  int `json:"freeSwap"` // "SwapFree"
 }
 
+var (
+	twoColRegexMemory = regexp.MustCompile(":( +)?")
+)
+
 func (m Memory) GetResources() interface{} {
 	// Open the file
 	f, err := os.Open("/proc/meminfo")

@@ -9,6 +9,7 @@ import (
 
 // Gpu
 // Abstraction of a GPU
+// TODO: Get CUDA Cores
 type Gpu struct {
 	GpuName string `json:"gpuName"` // GPU model name
 	GpuID   string `json:"gpuID"`   // "GPU UUID"

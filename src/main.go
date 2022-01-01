@@ -7,4 +7,6 @@ import (
 func main() {
 	cpu := model.Cpu{}
 	cpuList := cpu.GetResources()
+	gpu := model.Gpu{}
+	gpuList := gpu.GetResources()
 }

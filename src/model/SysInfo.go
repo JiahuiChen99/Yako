@@ -14,6 +14,7 @@ type SysInfo struct {
 	Machine  string `json:"machine"`
 }
 
+// GetResources retrives uname information
 func (s SysInfo) GetResources() interface{} {
 	var uname syscall.Utsname
 
@@ -31,6 +32,8 @@ func (s SysInfo) GetResources() interface{} {
 	return sysinfo
 }
 
+// parseUname
+// Parse Utsname fields and returns a stringified version
 func parseUname(unameBuff [65]int8) string {
 	var byteString [65]byte
 	index := 0

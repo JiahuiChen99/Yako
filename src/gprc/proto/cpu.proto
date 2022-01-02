@@ -1,0 +1,14 @@
+// cpu.proto
+syntax = "proto3";
+
+message Core {
+  uint64 Processor = 1;
+  uint64 CoreID = 2;
+}
+
+message Cpu {
+  string CpuName = 1;
+  uint64 CpuCores = 2;
+  uint64 Socket = 3;
+  repeated Core Cores = 4;
+}

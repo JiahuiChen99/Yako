@@ -21,5 +21,18 @@ func (s SysInfo) GetResources() interface{} {
 		panic("Couldn't get system information" + err.Error())
 	}
 
-	return nil
+	var sysinfo SysInfo
+
+	return sysinfo
+}
+
+func parseUname(unameBuff [65]int8) string {
+	var byteString [65]byte
+	index := 0
+
+	for ; unameBuff[index] != 0; index++ {
+		byteString[index] = uint8(unameBuff[index])
+	}
+
+	return string(byteString[:index])
 }

@@ -1,0 +1,9 @@
+// memory.proto
+syntax = "proto3";
+
+message Memory {
+  uint64 Total = 1;
+  uint64 Free = 2;
+  uint64 TotalSwap = 3;
+  uint64 FreeSwap = 4;
+}

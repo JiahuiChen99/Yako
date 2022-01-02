@@ -22,6 +22,11 @@ func (s SysInfo) GetResources() interface{} {
 	}
 
 	var sysinfo SysInfo
+	sysinfo.SysName = parseUname(uname.Sysname)
+	sysinfo.NodeName = parseUname(uname.Nodename)
+	sysinfo.Release = parseUname(uname.Release)
+	sysinfo.Version = parseUname(uname.Version)
+	sysinfo.Machine = parseUname(uname.Machine)
 
 	return sysinfo
 }

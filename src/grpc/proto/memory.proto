@@ -1,6 +1,8 @@
 // memory.proto
 syntax = "proto3";
 
+option go_package = "pb/";
+
 message Memory {
   uint64 Total = 1;
   uint64 Free = 2;

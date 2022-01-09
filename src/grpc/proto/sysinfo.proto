@@ -1,6 +1,8 @@
 // sysinfo.proto
 syntax = "proto3";
 
+option go_package = "pb/";
+
 message SysInfo {
   string SysName = 1;
   string NodeName = 2;

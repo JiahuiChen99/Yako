@@ -1,6 +1,8 @@
 // gpu.proto
 syntax = "proto3";
 
+option go_package = "pb/";
+
 message Gpu {
   string GpuName = 1;
   string GpuID = 2;

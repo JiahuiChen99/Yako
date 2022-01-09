@@ -1,6 +1,8 @@
 // cpu.proto
 syntax = "proto3";
 
+option go_package = "pb/";
+
 message Core {
   uint64 Processor = 1;
   uint64 CoreID = 2;

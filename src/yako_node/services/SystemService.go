@@ -21,6 +21,3 @@ func (ns *YakoNodeServer) GetSystemGpuInformation(ctx context.Context, empty *em
 
 func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty *empty.Empty) (*yako.Memory, error) {
 }
-
-func (ns *YakoNodeServer) mustEmbedUnimplementedNodeServiceServer() {
-}

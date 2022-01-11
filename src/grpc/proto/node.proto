@@ -17,9 +17,9 @@ service NodeService {
   // Retrieves system general information
   rpc GetSystemInformation(google.protobuf.Empty) returns (yako.SysInfo);
   // Retrieves system CPU related information
-  rpc GetSystemCpuInformation(google.protobuf.Empty) returns (yako.Cpu);
+  rpc GetSystemCpuInformation(google.protobuf.Empty) returns (yako.CpuList);
   // Retrieves system GPU related information
-  rpc GetSystemGpuInformation(google.protobuf.Empty) returns (yako.Gpu);
+  rpc GetSystemGpuInformation(google.protobuf.Empty) returns (yako.GpuList);
   // Retrieves system main memory related information
   rpc GetSystemMemoryInformation(google.protobuf.Empty) returns (yako.Memory);
 }

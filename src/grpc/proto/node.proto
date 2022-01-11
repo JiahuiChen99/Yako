@@ -1,0 +1,25 @@
+// cpu.proto
+syntax = "proto3";
+// gRPC package
+package yako;
+import "google/protobuf/empty.proto";
+import "cpu.proto";
+import "gpu.proto";
+import "memory.proto";
+import "sysinfo.proto";
+
+// Go related package
+option go_package = "yako/";
+
+
+// Defines the services that a yako node offers
+service NodeService {
+  // Retrieves system general information
+  rpc GetSystemInformation(google.protobuf.Empty) returns (yako.SysInfo);
+  // Retrieves system CPU related information
+  rpc GetSystemCpuInformation(google.protobuf.Empty) returns (yako.Cpu);
+  // Retrieves system GPU related information
+  rpc GetSystemGpuInformation(google.protobuf.Empty) returns (yako.Gpu);
+  // Retrieves system main memory related information
+  rpc GetSystemMemoryInformation(google.protobuf.Empty) returns (yako.Memory);
+}

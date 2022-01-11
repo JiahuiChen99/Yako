@@ -1,4 +1,4 @@
-package yako_nodeservices
+package yako_node_service
 
 import (
 	"context"

@@ -14,3 +14,7 @@ message Cpu {
   uint64 Socket = 3;
   repeated Core Cores = 4;
 }
+
+message CpuList {
+  repeated Cpu CpuList = 1;
+}

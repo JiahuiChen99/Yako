@@ -11,3 +11,7 @@ message Gpu {
   uint64 Major = 5;
   uint64 Minor = 6;
 }
+
+message GpuList {
+  repeated Gpu GpuList = 1;
+}

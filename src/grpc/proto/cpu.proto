@@ -1,7 +1,7 @@
 // cpu.proto
 syntax = "proto3";
-
-option go_package = "pb/";
+package yako;
+option go_package = "yako/";
 
 message Core {
   uint64 Processor = 1;

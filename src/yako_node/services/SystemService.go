@@ -27,9 +27,41 @@ func (ns *YakoNodeServer) GetSystemInformation(ctx context.Context, empty *empty
 }
 
 func (ns *YakoNodeServer) GetSystemCpuInformation(ctx context.Context, empty *empty.Empty) (*yako.CpuList, error) {
+	// Get system CPU information
+	cpu := model.Cpu{}
+	cpuInfo := cpu.GetResources().([]model.Cpu)
+
+	var cpuList []*yako.Cpu
+	var coresList []*yako.Core
+
+	// Build CPU list with gRPC structs
+	for _, cpu := range cpuInfo {
+		// Build CPU cores list with gRPC structs
+		for i := range cpu.Cores {
+			coresList = append(coresList, &yako.Core{
+				CoreID:    cpu.Cores[i].CoreID,
+				Processor: cpu.Cores[i].Processor,
+			})
+		}
+
+		cpuList = append(cpuList, &yako.Cpu{
+			CpuName:  cpu.CpuName,
+			CpuCores: cpu.CpuCores,
+			Socket:   cpu.Socket,
+			Cores:    coresList,
+		})
+	}
+
+	// Build CpuList gRPC struct
+	info := &yako.CpuList{
+		CpuList: cpuList,
+	}
+
+	return info, nil
 }
 
 func (ns *YakoNodeServer) GetSystemGpuInformation(ctx context.Context, empty *empty.Empty) (*yako.GpuList, error) {
+	return nil, nil
 }
 
 func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty *empty.Empty) (*yako.Memory, error) {

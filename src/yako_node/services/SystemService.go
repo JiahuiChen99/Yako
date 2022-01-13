@@ -61,7 +61,28 @@ func (ns *YakoNodeServer) GetSystemCpuInformation(ctx context.Context, empty *em
 }
 
 func (ns *YakoNodeServer) GetSystemGpuInformation(ctx context.Context, empty *empty.Empty) (*yako.GpuList, error) {
-	return nil, nil
+	gpu := model.Gpu{}
+	gpuInfo := gpu.GetResources().([]model.Gpu)
+
+	var gpuList []*yako.Gpu
+
+	// Build GPU list with gRPC structs
+	for _, gpu := range gpuInfo {
+		gpuList = append(gpuList, &yako.Gpu{
+			GpuName: gpu.GpuName,
+			GpuID:   gpu.GpuID,
+			BusID:   gpu.BusID,
+			IRQ:     gpu.IRQ,
+			Major:   gpu.Major,
+			Minor:   gpu.Minor,
+		})
+	}
+
+	info := &yako.GpuList{
+		GpuList: gpuList,
+	}
+
+	return info, nil
 }
 
 func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty *empty.Empty) (*yako.Memory, error) {

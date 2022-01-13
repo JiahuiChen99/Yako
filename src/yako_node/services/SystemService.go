@@ -33,4 +33,15 @@ func (ns *YakoNodeServer) GetSystemGpuInformation(ctx context.Context, empty *em
 }
 
 func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty *empty.Empty) (*yako.Memory, error) {
+	meminfo := model.Memory{}
+	i := meminfo.GetResources().(model.Memory)
+
+	info := &yako.Memory{
+		Total:     i.Total,
+		Free:      i.Free,
+		FreeSwap:  i.FreeSwap,
+		TotalSwap: i.TotalSwap,
+	}
+
+	return info, nil
 }

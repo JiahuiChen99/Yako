@@ -10,16 +10,16 @@ import (
 // Core
 // Representation of a CPU core
 type Core struct {
-	Processor uint `json:"processor"` // "processor" field
-	CoreID    uint `json:"coreID"`    // "core id" field
+	Processor uint64 `json:"processor"` // "processor" field
+	CoreID    uint64 `json:"coreID"`    // "core id" field
 }
 
 // Cpu
 // Representation of a processor modeled after /proc/cpuinfo
 type Cpu struct {
 	CpuName  string `json:"cpuName"`  // CPU model name
-	CpuCores uint   `json:"cpuCores"` // Number of CPU cores
-	Socket   uint   `json:"socket"`   // "physical id" for multiprocessor systems
+	CpuCores uint64 `json:"cpuCores"` // Number of CPU cores
+	Socket   uint64 `json:"socket"`   // "physical id" for multiprocessor systems
 	Cores    []Core `json:"cores"`
 }
 
@@ -76,7 +76,7 @@ func (c *Cpu) GetResources() interface{} {
 					panic("Error while parsing CPU 'processor' field ")
 				}
 
-				tmpCore.Processor = uint(processor)
+				tmpCore.Processor = uint64(processor)
 
 			case "core id":
 				coreID, err := strconv.Atoi(scannerLine[1])
@@ -84,7 +84,7 @@ func (c *Cpu) GetResources() interface{} {
 					panic("Error while parsing CPU 'core id' field ")
 				}
 
-				tmpCore.CoreID = uint(coreID)
+				tmpCore.CoreID = uint64(coreID)
 
 			case "power management":
 				// Store data after parsing the last property
@@ -102,8 +102,8 @@ func (c *Cpu) GetResources() interface{} {
 func saveCPU(cpuList []Cpu, cpusCount int, cpuModel string, cpuCores int, socket int, tmpCores Core) {
 	// Store general CPU general information
 	cpuList[cpusCount].CpuName = cpuModel
-	cpuList[cpusCount].CpuCores = uint(cpuCores)
-	cpuList[cpusCount].Socket = uint(socket)
+	cpuList[cpusCount].CpuCores = uint64(cpuCores)
+	cpuList[cpusCount].Socket = uint64(socket)
 
 	// Store CPU cores information
 	cpuList[cpusCount].Cores = append(cpuList[cpusCount].Cores, tmpCores)

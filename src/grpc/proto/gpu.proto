@@ -1,7 +1,7 @@
 // gpu.proto
 syntax = "proto3";
-
-option go_package = "pb/";
+package yako;
+option go_package = "yako/";
 
 message Gpu {
   string GpuName = 1;
@@ -10,4 +10,8 @@ message Gpu {
   uint64 IRQ = 4;
   uint64 Major = 5;
   uint64 Minor = 6;
+}
+
+message GpuList {
+  repeated Gpu GpuList = 1;
 }

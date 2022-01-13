@@ -1,7 +1,7 @@
 // memory.proto
 syntax = "proto3";
-
-option go_package = "pb/";
+package yako;
+option go_package = "yako/";
 
 message Memory {
   uint64 Total = 1;

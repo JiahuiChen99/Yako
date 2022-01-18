@@ -14,9 +14,9 @@ type Gpu struct {
 	GpuName string `json:"gpuName"` // GPU model name
 	GpuID   string `json:"gpuID"`   // "GPU UUID"
 	BusID   string `json:"busID"`   // "Bus Location" PCIe bus ID
-	IRQ     uint   `json:"IRQ"`     // "IRQ" GPU Interrupt lane
-	Major   uint   `json:"major"`   //
-	Minor   uint   `json:"minor"`   // "Device Minor" for /dev/nvidia<minor> character device
+	IRQ     uint64 `json:"IRQ"`     // "IRQ" GPU Interrupt lane
+	Major   uint64 `json:"major"`   //
+	Minor   uint64 `json:"minor"`   // "Device Minor" for /dev/nvidia<minor> character device
 }
 
 var (
@@ -71,13 +71,13 @@ func (g Gpu) GetResources() interface{} {
 					if err != nil {
 						panic("Error while parsing GPU 'Device Minor'")
 					}
-					gpuList[gpusCount].Minor = uint(minorNumber)
+					gpuList[gpusCount].Minor = uint64(minorNumber)
 				case "IRQ":
 					irqNumber, err := strconv.Atoi(scannerLine[1])
 					if err != nil {
 						panic("Error while parsing GPU 'IRQ'")
 					}
-					gpuList[gpusCount].IRQ = uint(irqNumber)
+					gpuList[gpusCount].IRQ = uint64(irqNumber)
 				}
 			}
 		}

@@ -1,0 +1,12 @@
+// sysinfo.proto
+syntax = "proto3";
+package yako;
+option go_package = "yako/";
+
+message SysInfo {
+  string SysName = 1;
+  string NodeName = 2;
+  string Release = 3;
+  string Version = 4;
+  string Machine = 5;
+}

@@ -11,10 +11,10 @@ import (
 // Memory
 // Representation of the main memory, the unit is in kB
 type Memory struct {
-	Total     int `json:"total"`    // "MemTotal" system installed memory
-	Free      int `json:"free"`     // "MemFree" system unused memory
-	TotalSwap int `json:"swap"`     // "SwapTotal"
-	FreeSwap  int `json:"freeSwap"` // "SwapFree"
+	Total     uint64 `json:"total"`    // "MemTotal" system installed memory
+	Free      uint64 `json:"free"`     // "MemFree" system unused memory
+	TotalSwap uint64 `json:"swap"`     // "SwapTotal"
+	FreeSwap  uint64 `json:"freeSwap"` // "SwapFree"
 }
 
 var (
@@ -45,13 +45,13 @@ func (m Memory) GetResources() interface{} {
 
 			switch scannerLine[0] {
 			case "MemTotal":
-				memory.Total = memoryQuantity
+				memory.Total = uint64(memoryQuantity)
 			case "MemFree":
-				memory.Free = memoryQuantity
+				memory.Free = uint64(memoryQuantity)
 			case "SwapTotal":
-				memory.TotalSwap = memoryQuantity
+				memory.TotalSwap = uint64(memoryQuantity)
 			case "SwapFree":
-				memory.FreeSwap = memoryQuantity
+				memory.FreeSwap = uint64(memoryQuantity)
 			}
 		}
 	}

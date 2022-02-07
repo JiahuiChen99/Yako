@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
@@ -16,6 +17,9 @@ func APIServer(wg *sync.WaitGroup) {
 	// Default gin router with default middleware:
 	// logger & recovery
 	router := gin.Default()
+
+	// Add CORS support
+	router.Use(cors.Default())
 
 	// Attach routes to gin router
 	API.AddRoutes(router)

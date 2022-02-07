@@ -3,11 +3,37 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"log"
+	"sync"
 	"yako/src/grpc/yako"
+	"yako/src/yako_master/API"
 )
+
+func APIServer(wg *sync.WaitGroup) {
+	// Default gin router with default middleware:
+	// logger & recovery
+	router := gin.Default()
+
+	// Add CORS support
+	router.Use(cors.Default())
+
+	// Attach routes to gin router
+	API.AddRoutes(router)
+
+	// TODO: Use environment variables or secrets managers like Hashicorp Vault
+	err := router.Run(":8001")
+	if err != nil {
+		// TODO: Use logger
+		panic("API gin Server could not be started!")
+	}
+
+	// Tell wait group once the go routine is ended
+	wg.Done()
+}
 
 func main() {
 	cc, err := grpc.Dial("localhost:8000", grpc.WithInsecure())
@@ -36,4 +62,16 @@ func main() {
 	fmt.Println(cpuInfo)
 	fmt.Println(gpuInfo)
 	fmt.Println(memInfo)
+
+	// create new wait group
+	wg := new(sync.WaitGroup)
+
+	// add 1 go routines to 'wg' wait group
+	wg.Add(1)
+
+	// go routine for gin gonic rest API
+	go APIServer(wg)
+
+	// Wait for all go routines to finish
+	wg.Wait()
 }

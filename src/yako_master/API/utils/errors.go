@@ -23,6 +23,6 @@ func BadRequestError(errorMsg string) *RestError {
 	return &RestError{
 		Message: errorMsg,
 		Status:  http.StatusUnprocessableEntity,
-		Error:   "unprocessable entity",
+		Error:   "bad request",
 	}
 }

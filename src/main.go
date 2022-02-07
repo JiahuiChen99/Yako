@@ -7,6 +7,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"log"
+	"sync"
 	"yako/src/grpc/yako"
 )
 
@@ -51,4 +52,16 @@ func main() {
 	fmt.Println(cpuInfo)
 	fmt.Println(gpuInfo)
 	fmt.Println(memInfo)
+
+	// create new wait group
+	wg := new(sync.WaitGroup)
+
+	// add 1 go routines to 'wg' wait group
+	wg.Add(1)
+
+	// go routine for gin gonic rest API
+	go APIServer(wg)
+
+	// Wait for all go routines to finish
+	wg.Wait()
 }

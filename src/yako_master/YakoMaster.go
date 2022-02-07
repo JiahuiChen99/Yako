@@ -9,13 +9,19 @@ import (
 	"log"
 	"sync"
 	"yako/src/grpc/yako"
+	"yako/src/yako_master/API"
 )
 
 func APIServer(wg *sync.WaitGroup) {
-	r := gin.Default()
+	// Default gin router with default middleware:
+	// logger & recovery
+	router := gin.Default()
+
+	// Attach routes to gin router
+	API.AddRoutes(router)
 
 	// TODO: Use environment variables or secrets managers like Hashicorp Vault
-	err := r.Run(":8001")
+	err := router.Run(":8001")
 	if err != nil {
 		// TODO: Use logger
 		panic("API gin Server could not be started!")

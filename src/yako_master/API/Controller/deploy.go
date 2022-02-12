@@ -16,6 +16,13 @@ func UploadApp(c *gin.Context) {
 		return
 	}
 
+	// Save the file on the server
+	if saveErr := c.SaveUploadedFile(file, "/usr/yakomaster/"+file.Filename); saveErr != nil {
+		err := utils.InternalServerError(saveErr.Error())
+		c.JSON(err.Status, err)
+		return
+	}
+
 	// File uploaded and stored
 	c.JSON(http.StatusOK, map[string]string{"status": "uploaded successfully"})
 }

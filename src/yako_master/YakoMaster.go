@@ -10,6 +10,7 @@ import (
 	"log"
 	"sync"
 	"yako/src/grpc/yako"
+	"yako/src/utils/directory_util"
 	"yako/src/yako_master/API"
 )
 
@@ -62,6 +63,9 @@ func main() {
 	fmt.Println(cpuInfo)
 	fmt.Println(gpuInfo)
 	fmt.Println(memInfo)
+
+	// YakoMaster working directory
+	directory_util.WorkDir("yakomaster")
 
 	// create new wait group
 	wg := new(sync.WaitGroup)

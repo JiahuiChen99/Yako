@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -25,7 +26,7 @@ func main() {
 	// Attempt to create Service Registry
 	zookeeper.CreateServiceRegistryZnode(zkp)
 	// Add YakoAgent to Service Registry for service discovery
-	zookeeper.RegisterToCluster(zkp)
+	zookeeper.RegisterToCluster(zkp, fmt.Sprintf("http://%s", lis.Addr().String()))
 
 	// Start gRPC server
 	s := grpc.NewServer()

@@ -1,0 +1,37 @@
+package main
+
+import (
+	"google.golang.org/grpc"
+	"log"
+	"net"
+	"yako/src/grpc/yako"
+	"yako/src/utils/zookeeper"
+	"yako/src/yako_node/services"
+)
+
+var (
+	// Connect to Zookeeper and get singleton
+	zkp = zookeeper.NewZookeeper()
+)
+
+func main() {
+	log.Println("Starting YakoAgent")
+
+	lis, err := net.Listen("tcp", "localhost:8001")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// Attempt to create Service Registry
+	zookeeper.CreateServiceRegistryZnode(zkp)
+	// Add YakoAgent to Service Registry for service discovery
+	zookeeper.RegisterToCluster(zkp)
+
+	// Start gRPC server
+	s := grpc.NewServer()
+	yako.RegisterNodeServiceServer(s, &yako_node_service.YakoNodeServer{})
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatalln(err)
+	}
+}

@@ -13,6 +13,8 @@ import (
 var (
 	// Connect to Zookeeper and get singleton
 	zkp = zookeeper.NewZookeeper()
+	// TODO: Unregister node when yakoagent is killed
+	zn_uuid = ""
 )
 
 func main() {
@@ -26,7 +28,7 @@ func main() {
 	// Attempt to create Service Registry
 	zookeeper.CreateServiceRegistryZnode(zkp)
 	// Add YakoAgent to Service Registry for service discovery
-	zookeeper.RegisterToCluster(zkp, fmt.Sprintf("http://%s", lis.Addr().String()))
+	zn_uuid = zookeeper.RegisterToCluster(zkp, fmt.Sprintf("http://%s", lis.Addr().String()))
 
 	// Start gRPC server
 	s := grpc.NewServer()

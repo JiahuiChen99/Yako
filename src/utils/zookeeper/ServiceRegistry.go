@@ -13,17 +13,11 @@ const (
 // CreateServiceRegistryZnode will only be ran once
 // It creates a non-ephemeral znode in Zookeeper for
 // Service Registry at RegistryZnode
-func CreateServiceRegistryZnode() {
-	// Connect to Zookeeper
-	zookeeper, _, err := zk.Connect([]string{"127.0.0.1:2181"}, time.Second)
-	if err != nil {
-		log.Fatalln("Error connecting to Apache Zookeeper instance")
-	}
-
+func CreateServiceRegistryZnode(zkp *zk.Conn) {
 	// Create if the service registry znode doesn't exist
-	if exists, _, _ := zookeeper.Exists(RegistryZnode); !exists {
+	if exists, _, _ := zkp.Exists(RegistryZnode); !exists {
 		log.Println("Creating Service Registry")
-		path, err := zookeeper.Create(RegistryZnode, []byte{}, 0, zk.WorldACL(zk.PermAll))
+		path, err := zkp.Create(RegistryZnode, []byte{}, 0, zk.WorldACL(zk.PermAll))
 		if err != nil {
 			log.Fatalln("Error while creating Service Registry znode")
 		}
@@ -34,15 +28,9 @@ func CreateServiceRegistryZnode() {
 
 // RegisterToCluster will register an ephemeral znode for the current YakoAgent
 // Called by YakoAgents on start up for YakoMaster service discovery
-func RegisterToCluster() {
-	// Connect to Zookeeper
-	zookeeper, _, err := zk.Connect([]string{"127.0.0.1:2181"}, time.Second)
-	if err != nil {
-		log.Fatalln("Error connecting to Apache Zookeeper instance")
-	}
-
+func RegisterToCluster(zkp *zk.Conn) {
 	// Create YakoAgent ephemeral znode
-	path, err := zookeeper.Create(RegistryZnode+"/n_", []byte{}, zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(zk.PermAll))
+	path, err := zkp.Create(RegistryZnode+"/n_", []byte{}, zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(zk.PermAll))
 	if err != nil {
 		log.Fatalf("Error while adding %s znode to Service Registry", path)
 	}

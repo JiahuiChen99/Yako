@@ -10,6 +10,17 @@ const (
 	RegistryZnode = "/service_registry"
 )
 
+// NewZookeeper will create a new singleton of Zookeeper client
+func NewZookeeper() *zk.Conn {
+	// Connect to Zookeeper
+	zookeeper, _, err := zk.Connect([]string{"127.0.0.1:2181"}, time.Second)
+	if err != nil {
+		log.Fatalln("Error connecting to Apache Zookeeper instance")
+	}
+
+	return zookeeper
+}
+
 // CreateServiceRegistryZnode will only be ran once
 // It creates a non-ephemeral znode in Zookeeper for
 // Service Registry at RegistryZnode

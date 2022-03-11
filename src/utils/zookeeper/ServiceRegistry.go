@@ -10,6 +10,10 @@ const (
 	RegistryZnode = "/service_registry"
 )
 
+var (
+	ServicesRegistry []string // Service list
+)
+
 // NewZookeeper will create a new singleton of Zookeeper client
 func NewZookeeper() *zk.Conn {
 	// Connect to Zookeeper

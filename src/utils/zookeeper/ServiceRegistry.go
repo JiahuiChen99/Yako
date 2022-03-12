@@ -72,6 +72,7 @@ func GetAllServiceAddresses() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+	go WatchServices(registryWatch)
 
 	var addresses []string
 
@@ -104,13 +105,20 @@ func GetAllServiceAddresses() {
 		log.Println(fmt.Sprintf("[%d] %s", i, yakoagent))
 	}
 
-	select {
-	case event := <-watch:
-		if event.Type != zk.EventNodeChildrenChanged {
-			return
-		}
-		newService <- true
-		// TODO: Check if it's a new service registration & get the registered service socket
-		updateServices(zkp, newService)
+}
+
+// WatchServices processes watched events
+func WatchServices(watch <-chan zk.Event) {
+	event := <-watch
+	switch event.Type {
+	case zk.EventNodeCreated:
+		log.Println("A znode has been created for the new service")
+	case zk.EventNodeDeleted:
+		delete(ServicesRegistry, event.Path)
+		fmt.Println("Service at " + event.Path + " znode, has been disconnected")
+	case zk.EventNodeChildrenChanged:
+		updateServices()
+	default:
+		fmt.Println(event)
 	}
 }

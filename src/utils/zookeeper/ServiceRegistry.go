@@ -108,8 +108,8 @@ func GetAllServiceAddresses() {
 	}
 
 	// Log cluster available services
-	for i, yakoagent := range ServicesRegistry {
-		log.Println(fmt.Sprintf("[%d] %s", i, yakoagent))
+	for key, yakoagent := range ServicesRegistry {
+		log.Println(fmt.Sprintf("%s - %s", key, yakoagent))
 	}
 
 }

@@ -13,27 +13,28 @@ const (
 
 var (
 	ServicesRegistry []string // Service list
+	Zookeeper        *zk.Conn // Zookeeper instance
 )
 
 // NewZookeeper will create a new singleton of Zookeeper client
-func NewZookeeper() *zk.Conn {
+func NewZookeeper() {
 	// Connect to Zookeeper
 	zookeeper, _, err := zk.Connect([]string{"127.0.0.1:2181"}, time.Second)
 	if err != nil {
 		log.Fatalln("Error connecting to Apache Zookeeper instance")
 	}
 
-	return zookeeper
+	Zookeeper = zookeeper
 }
 
 // CreateServiceRegistryZnode will only be ran once
 // It creates a non-ephemeral znode in Zookeeper for
 // Service Registry at RegistryZnode
-func CreateServiceRegistryZnode(zkp *zk.Conn) {
+func CreateServiceRegistryZnode() {
 	// Create if the service registry znode doesn't exist
-	if exists, _, _ := zkp.Exists(RegistryZnode); !exists {
+	if exists, _, _ := Zookeeper.Exists(RegistryZnode); !exists {
 		log.Println("Creating Service Registry")
-		path, err := zkp.Create(RegistryZnode, []byte{}, 0, zk.WorldACL(zk.PermAll))
+		path, err := Zookeeper.Create(RegistryZnode, []byte{}, 0, zk.WorldACL(zk.PermAll))
 		if err != nil {
 			log.Fatalln("Error while creating Service Registry znode")
 		}
@@ -58,16 +59,16 @@ func RegisterToCluster(zkp *zk.Conn, yakoNodeAddress string) string {
 
 // updateServices is called whenever an event happens in zookeeper
 // it could be either a service disconnection or a new service registry
-func updateServices(zkp *zk.Conn, newService chan bool) {
-	fmt.Println("Updating cluster services list")
-	GetAllServiceAddresses(zkp, newService)
+func updateServices() {
+	log.Println("Updating cluster services list")
+	GetAllServiceAddresses()
 }
 
 // GetAllServiceAddresses consults zookeeper service registry and
 // watches for any change
-func GetAllServiceAddresses(zkp *zk.Conn, newService chan bool) {
+func GetAllServiceAddresses() {
 	// Retrieve all znodes from service registry
-	yakoagents, _, watch, err := zkp.ChildrenW(RegistryZnode)
+	yakoagents, _, registryWatch, err := Zookeeper.ChildrenW(RegistryZnode)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
@@ -87,7 +88,7 @@ func GetAllServiceAddresses(zkp *zk.Conn, newService chan bool) {
 		}
 
 		// Get yakoagent socket
-		socket, _, err := zkp.Get(yakoagentPath)
+		socket, _, err := Zookeeper.Get(yakoagentPath)
 		if err != nil {
 			log.Fatalln("Error while trying to fetch data from " + yakoagentPath)
 		}

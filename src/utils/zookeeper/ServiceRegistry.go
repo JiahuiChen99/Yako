@@ -76,11 +76,12 @@ func GetAllServiceAddresses() {
 	}
 	go WatchServices(registryWatch)
 
-	var addresses []string
+	var exists bool
+	var yakoagentWatch <-chan zk.Event
 
 	for _, service := range yakoagents {
 		yakoagentPath := fmt.Sprintf("%s/%s", RegistryZnode, service)
-		exists, _, err := zkp.Exists(yakoagentPath)
+		exists, _, yakoagentWatch, err = Zookeeper.ExistsW(yakoagentPath)
 		if err != nil {
 			log.Fatalln("Error while trying to check for " + yakoagentPath)
 		}

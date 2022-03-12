@@ -10,6 +10,7 @@ import (
 	"log"
 	"yako/src/grpc/yako"
 	"yako/src/utils/directory_util"
+	"yako/src/utils/zookeeper"
 	"yako/src/yako_master/API"
 )
 
@@ -33,45 +34,50 @@ func APIServer() {
 }
 
 func main() {
-	cc, err := grpc.Dial("localhost:8000", grpc.WithInsecure())
-	if err != nil {
-		log.Fatalln("Error al connectar")
-	}
-	defer cc.Close()
+	zookeeper.NewZookeeper()
 
-	c := yako.NewNodeServiceClient(cc)
+	// Channel for services registration events
+	newService := make(chan string)
+	zookeeper.NewServiceChan = newService
 
-	var sysInfo *yako.SysInfo
-	var cpuInfo *yako.CpuList
-	var gpuInfo *yako.GpuList
-	var memInfo *yako.Memory
-
-	sysInfo, err = c.GetSystemInformation(context.Background(), &empty.Empty{})
-	cpuInfo, err = c.GetSystemCpuInformation(context.Background(), &empty.Empty{})
-	gpuInfo, err = c.GetSystemGpuInformation(context.Background(), &empty.Empty{})
-	memInfo, err = c.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
-
-	if err != nil {
-		fmt.Println("Error")
-	}
-
-	fmt.Println(sysInfo)
-	fmt.Println(cpuInfo)
-	fmt.Println(gpuInfo)
-	fmt.Println(memInfo)
+	go zookeeper.GetAllServiceAddresses()
 
 	// YakoMaster working directory
 	directory_util.WorkDir("yakomaster")
 
-	// create new wait group
-	wg := new(sync.WaitGroup)
-
-	// add 1 go routines to 'wg' wait group
-	wg.Add(1)
-
 	// go routine for gin gonic rest API
-	go APIServer(wg)
+	go APIServer()
 
-	// Wait for all go routines to finish
-	wg.Wait()
+	for {
+		newServiceNodeUUID := <-newService
+		newServiceSocket := zookeeper.ServicesRegistry[newServiceNodeUUID]
+		log.Println("Call the new service " + newServiceSocket)
+
+		cc, err := grpc.Dial(newServiceSocket, grpc.WithInsecure())
+		if err != nil {
+			log.Fatalln("Error while dialing the service" + newServiceSocket)
+		}
+		defer cc.Close()
+
+		c := yako.NewNodeServiceClient(cc)
+
+		var sysInfo *yako.SysInfo
+		var cpuInfo *yako.CpuList
+		var gpuInfo *yako.GpuList
+		var memInfo *yako.Memory
+
+		sysInfo, err = c.GetSystemInformation(context.Background(), &empty.Empty{})
+		cpuInfo, err = c.GetSystemCpuInformation(context.Background(), &empty.Empty{})
+		gpuInfo, err = c.GetSystemGpuInformation(context.Background(), &empty.Empty{})
+		memInfo, err = c.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
+
+		if err != nil {
+			fmt.Println("Error")
+		}
+
+		fmt.Println(sysInfo)
+		fmt.Println(cpuInfo)
+		fmt.Println(gpuInfo)
+		fmt.Println(memInfo)
+	}
 }

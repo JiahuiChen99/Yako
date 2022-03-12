@@ -47,9 +47,9 @@ func CreateServiceRegistryZnode() {
 
 // RegisterToCluster will register an ephemeral znode for the current YakoAgent
 // Called by YakoAgents on start up for YakoMaster service discovery
-func RegisterToCluster(zkp *zk.Conn, yakoNodeAddress string) string {
+func RegisterToCluster(yakoNodeAddress string) string {
 	// Create YakoAgent ephemeral znode
-	path, err := zkp.Create(RegistryZnode+"/n_", []byte(yakoNodeAddress), zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(zk.PermAll))
+	path, err := Zookeeper.Create(RegistryZnode+"/n_", []byte(yakoNodeAddress), zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(zk.PermAll))
 	if err != nil {
 		log.Fatalf("Error while adding %s znode to Service Registry", path)
 	}

@@ -8,13 +8,12 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"log"
-	"sync"
 	"yako/src/grpc/yako"
 	"yako/src/utils/directory_util"
 	"yako/src/yako_master/API"
 )
 
-func APIServer(wg *sync.WaitGroup) {
+func APIServer() {
 	// Default gin router with default middleware:
 	// logger & recovery
 	router := gin.Default()
@@ -31,9 +30,6 @@ func APIServer(wg *sync.WaitGroup) {
 		// TODO: Use logger
 		panic("API gin Server could not be started!")
 	}
-
-	// Tell wait group once the go routine is ended
-	wg.Done()
 }
 
 func main() {

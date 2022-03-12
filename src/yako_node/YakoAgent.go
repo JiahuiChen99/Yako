@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 	"yako/src/grpc/yako"
 	"yako/src/utils/zookeeper"
 	"yako/src/yako_node/services"
@@ -18,9 +19,11 @@ var (
 )
 
 func main() {
-	log.Println("Starting YakoAgent")
+	port := os.Args[1]
+	addr := fmt.Sprintf("localhost:%s", port)
+	log.Println("Starting YakoAgent at " + addr)
 
-	lis, err := net.Listen("tcp", "localhost:8001")
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalln(err)
 	}

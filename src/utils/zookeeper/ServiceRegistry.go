@@ -98,10 +98,14 @@ func GetAllServiceAddresses() {
 		}
 
 		// Add the socket to the service registry list
-		addresses = append(addresses, string(socket[:]))
+		socketPath := string(socket[:])
+		if ServicesRegistry[yakoagentPath] == "" {
+			// A new service has connected
+			NewServiceChan <- yakoagentPath
+			ServicesRegistry[yakoagentPath] = socketPath
+		}
+		go WatchServices(yakoagentWatch)
 	}
-
-	ServicesRegistry = addresses
 
 	// Log cluster available services
 	for i, yakoagent := range ServicesRegistry {

@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"yako/src/grpc/yako"
 )
 
 // Gpu
@@ -86,4 +87,16 @@ func (g Gpu) GetResources() interface{} {
 	}
 
 	return gpuList
+}
+
+// UnmarshallGPU converts protobuf gpu model into yako gpu model
+func UnmarshallGPU(pbGPU *yako.Gpu) Gpu {
+	return Gpu{
+		GpuID:   pbGPU.GetGpuID(),
+		GpuName: pbGPU.GetGpuName(),
+		BusID:   pbGPU.GetBusID(),
+		Major:   pbGPU.GetMajor(),
+		Minor:   pbGPU.GetMinor(),
+		IRQ:     pbGPU.GetIRQ(),
+	}
 }

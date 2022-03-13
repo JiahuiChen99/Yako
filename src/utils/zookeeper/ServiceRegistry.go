@@ -107,16 +107,9 @@ func GetAllServiceAddresses() {
 			}
 			// A new service has connected
 			NewServiceChan <- yakoagentPath
-			ServicesRegistry[yakoagentPath] = socketPath
 		}
 		go WatchServices(yakoagentWatch)
 	}
-
-	// Log cluster available services
-	for key, yakoagent := range ServicesRegistry {
-		log.Println(fmt.Sprintf("%s - %s", key, yakoagent))
-	}
-
 }
 
 // WatchServices processes watched events

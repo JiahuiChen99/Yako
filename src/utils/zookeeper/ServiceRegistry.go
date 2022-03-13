@@ -100,7 +100,11 @@ func GetAllServiceAddresses() {
 
 		// Add the socket to the service registry list
 		socketPath := string(socket[:])
-		if ServicesRegistry[yakoagentPath] == "" {
+		if ServicesRegistry[yakoagentPath] == nil {
+			// Store socket path in the registry
+			ServicesRegistry[yakoagentPath] = &model.ServiceInfo{
+				Socket: socketPath,
+			}
 			// A new service has connected
 			NewServiceChan <- yakoagentPath
 			ServicesRegistry[yakoagentPath] = socketPath

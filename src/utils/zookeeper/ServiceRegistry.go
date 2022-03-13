@@ -5,6 +5,7 @@ import (
 	"github.com/go-zookeeper/zk"
 	"log"
 	"time"
+	"yako/src/model"
 )
 
 const (
@@ -12,9 +13,9 @@ const (
 )
 
 var (
-	Zookeeper        *zk.Conn          // Zookeeper instance
-	NewServiceChan   chan string       // Handle Service Channel
-	ServicesRegistry map[string]string // Service list
+	Zookeeper        *zk.Conn                      // Zookeeper instance
+	NewServiceChan   chan string                   // Handle Service Channel
+	ServicesRegistry map[string]*model.ServiceInfo // Service list
 )
 
 // NewZookeeper will create a new singleton of Zookeeper client
@@ -26,7 +27,7 @@ func NewZookeeper() {
 	}
 
 	Zookeeper = zookeeper
-	ServicesRegistry = make(map[string]string)
+	ServicesRegistry = make(map[string]*model.ServiceInfo)
 }
 
 // CreateServiceRegistryZnode will only be ran once

@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"yako/src/grpc/yako"
+	"yako/src/model"
 	"yako/src/utils/directory_util"
 	"yako/src/utils/zookeeper"
 	"yako/src/yako_master/API"
@@ -75,9 +76,24 @@ func main() {
 			fmt.Println("Error")
 		}
 
-		fmt.Println(sysInfo)
-		fmt.Println(cpuInfo)
-		fmt.Println(gpuInfo)
-		fmt.Println(memInfo)
+		var cpuList []model.Cpu
+		for _, cpu := range cpuInfo.GetCpuList() {
+			cpuList = append(cpuList, model.UnmarshallCPU(cpu))
+		}
+
+		var gpuList []model.Gpu
+		for _, gpu := range gpuInfo.GetGpuList() {
+			gpuList = append(gpuList, model.UnmarshallGPU(gpu))
+		}
+
+		// Update service information to the cluster schema
+		if zookeeper.ServicesRegistry[newServiceNodeUUID] == nil {
+			zookeeper.ServicesRegistry[newServiceNodeUUID] = &model.ServiceInfo{
+				CpuList: cpuList,
+				GpuList: gpuList,
+				Memory:  model.UnmarshallMemory(memInfo),
+				SysInfo: model.UnmarshallSysInfo(sysInfo),
+			}
+		}
 	}
 }

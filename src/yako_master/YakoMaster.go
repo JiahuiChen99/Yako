@@ -87,7 +87,7 @@ func main() {
 		}
 
 		// Update service information to the cluster schema
-		if zookeeper.ServicesRegistry[newServiceNodeUUID] == nil {
+		if zookeeper.ServicesRegistry[newServiceNodeUUID] != nil {
 			zookeeper.ServicesRegistry[newServiceNodeUUID] = &model.ServiceInfo{
 				CpuList: cpuList,
 				GpuList: gpuList,

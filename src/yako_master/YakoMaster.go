@@ -8,11 +8,17 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"log"
+	"os"
 	"yako/src/grpc/yako"
 	"yako/src/model"
 	"yako/src/utils/directory_util"
 	"yako/src/utils/zookeeper"
 	"yako/src/yako_master/API"
+)
+
+var (
+	addr    = "" // Socket ip + port
+	zn_uuid = ""
 )
 
 func APIServer() {
@@ -27,7 +33,7 @@ func APIServer() {
 	API.AddRoutes(router)
 
 	// TODO: Use environment variables or secrets managers like Hashicorp Vault
-	err := router.Run(":8001")
+	err := router.Run(addr)
 	if err != nil {
 		// TODO: Use logger
 		panic("API gin Server could not be started!")
@@ -35,6 +41,10 @@ func APIServer() {
 }
 
 func main() {
+	// YakoMaster socket address
+	port := os.Args[1]
+	addr = fmt.Sprintf("localhost:%s", port)
+
 	zookeeper.NewZookeeper()
 
 	// Channel for services registration events

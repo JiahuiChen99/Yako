@@ -33,7 +33,7 @@ func CreateMasterRegistryZnode() {
 // Called on YakoMaster start up
 func RegisterToMasterCluster(yakoMasterAddress string) string {
 	// Create YakoMaster ephemeral znode
-	path, err := Zookeeper.Create(RegistryZnode+"/m_", []byte(yakoMasterAddress), zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(zk.PermAll))
+	path, err := Zookeeper.Create(MasterRegistryZnode+"/m_", []byte(yakoMasterAddress), zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(zk.PermAll))
 	if err != nil {
 		log.Fatalf("Error while adding %s znode to Master Registry", path)
 	}

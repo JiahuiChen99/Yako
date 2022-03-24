@@ -46,7 +46,10 @@ func main() {
 	addr = fmt.Sprintf("localhost:%s", port)
 
 	zookeeper.NewZookeeper()
-
+	// Attempt to create Master Registry
+	zookeeper.CreateMasterRegistryZnode()
+	// Add YakoMaster to Master Registry
+	zn_uuid = zookeeper.RegisterToMasterCluster(addr)
 	// Channel for services registration events
 	newService := make(chan string)
 	zookeeper.NewServiceChan = newService

@@ -2,6 +2,7 @@ package model
 
 import (
 	"syscall"
+	"yako/src/grpc/yako"
 )
 
 // SysInfo
@@ -43,4 +44,15 @@ func parseUname(unameBuff [65]int8) string {
 	}
 
 	return string(byteString[:index])
+}
+
+// UnmarshallSysInfo converts protobuf sysinfo model into yako sysinfo model
+func UnmarshallSysInfo(sysInfo *yako.SysInfo) SysInfo {
+	return SysInfo{
+		SysName:  sysInfo.GetSysName(),
+		NodeName: sysInfo.GetNodeName(),
+		Release:  sysInfo.GetRelease(),
+		Version:  sysInfo.GetVersion(),
+		Machine:  sysInfo.GetMachine(),
+	}
 }

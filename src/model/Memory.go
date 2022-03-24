@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"yako/src/grpc/yako"
 )
 
 // Memory
@@ -57,4 +58,14 @@ func (m Memory) GetResources() interface{} {
 	}
 
 	return memory
+}
+
+// UnmarshallMemory converts protobuf memory model into yako memory model
+func UnmarshallMemory(memory *yako.Memory) Memory {
+	return Memory{
+		Total:     memory.GetTotal(),
+		Free:      memory.GetFree(),
+		TotalSwap: memory.GetTotalSwap(),
+		FreeSwap:  memory.GetFreeSwap(),
+	}
 }

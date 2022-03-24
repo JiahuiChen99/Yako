@@ -12,5 +12,5 @@ func AddRoutes(router *gin.Engine) {
 	// handler for app deploying
 	router.POST("/deploy", Controller.UploadApp)
 	// handler for cluster information
-	router.GET("/cluster", nil)
+	router.GET("/cluster", Controller.Cluster)
 }

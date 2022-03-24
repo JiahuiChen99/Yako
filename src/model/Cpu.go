@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"yako/src/grpc/yako"
 )
 
 // Core
@@ -107,4 +108,22 @@ func saveCPU(cpuList []Cpu, cpusCount int, cpuModel string, cpuCores int, socket
 
 	// Store CPU cores information
 	cpuList[cpusCount].Cores = append(cpuList[cpusCount].Cores, tmpCores)
+}
+
+// UnmarshallCPU converts protobuf cpu model into yako cpu model
+func UnmarshallCPU(pbCPU *yako.Cpu) Cpu {
+	coresList := make([]Core, len(pbCPU.Cores))
+	for _, core := range pbCPU.GetCores() {
+		coresList = append(coresList, Core{
+			Processor: core.GetProcessor(),
+			CoreID:    core.GetCoreID(),
+		})
+	}
+
+	return Cpu{
+		Socket:   pbCPU.GetSocket(),
+		CpuCores: pbCPU.GetCpuCores(),
+		CpuName:  pbCPU.GetCpuName(),
+		Cores:    coresList,
+	}
 }

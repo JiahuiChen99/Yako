@@ -8,13 +8,14 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"log"
-	"sync"
 	"yako/src/grpc/yako"
+	"yako/src/model"
 	"yako/src/utils/directory_util"
+	"yako/src/utils/zookeeper"
 	"yako/src/yako_master/API"
 )
 
-func APIServer(wg *sync.WaitGroup) {
+func APIServer() {
 	// Default gin router with default middleware:
 	// logger & recovery
 	router := gin.Default()
@@ -31,51 +32,68 @@ func APIServer(wg *sync.WaitGroup) {
 		// TODO: Use logger
 		panic("API gin Server could not be started!")
 	}
-
-	// Tell wait group once the go routine is ended
-	wg.Done()
 }
 
 func main() {
-	cc, err := grpc.Dial("localhost:8000", grpc.WithInsecure())
-	if err != nil {
-		log.Fatalln("Error al connectar")
-	}
-	defer cc.Close()
+	zookeeper.NewZookeeper()
 
-	c := yako.NewNodeServiceClient(cc)
+	// Channel for services registration events
+	newService := make(chan string)
+	zookeeper.NewServiceChan = newService
 
-	var sysInfo *yako.SysInfo
-	var cpuInfo *yako.CpuList
-	var gpuInfo *yako.GpuList
-	var memInfo *yako.Memory
-
-	sysInfo, err = c.GetSystemInformation(context.Background(), &empty.Empty{})
-	cpuInfo, err = c.GetSystemCpuInformation(context.Background(), &empty.Empty{})
-	gpuInfo, err = c.GetSystemGpuInformation(context.Background(), &empty.Empty{})
-	memInfo, err = c.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
-
-	if err != nil {
-		fmt.Println("Error")
-	}
-
-	fmt.Println(sysInfo)
-	fmt.Println(cpuInfo)
-	fmt.Println(gpuInfo)
-	fmt.Println(memInfo)
+	go zookeeper.GetAllServiceAddresses()
 
 	// YakoMaster working directory
 	directory_util.WorkDir("yakomaster")
 
-	// create new wait group
-	wg := new(sync.WaitGroup)
-
-	// add 1 go routines to 'wg' wait group
-	wg.Add(1)
-
 	// go routine for gin gonic rest API
-	go APIServer(wg)
+	go APIServer()
 
-	// Wait for all go routines to finish
-	wg.Wait()
+	for {
+		newServiceNodeUUID := <-newService
+		newServiceSocket := zookeeper.ServicesRegistry[newServiceNodeUUID]
+		log.Println("Call the new service " + newServiceSocket.Socket)
+
+		cc, err := grpc.Dial(newServiceSocket.Socket, grpc.WithInsecure())
+		if err != nil {
+			log.Fatalln("Error while dialing the service" + newServiceSocket.Socket)
+		}
+		defer cc.Close()
+
+		c := yako.NewNodeServiceClient(cc)
+
+		var sysInfo *yako.SysInfo
+		var cpuInfo *yako.CpuList
+		var gpuInfo *yako.GpuList
+		var memInfo *yako.Memory
+
+		sysInfo, err = c.GetSystemInformation(context.Background(), &empty.Empty{})
+		cpuInfo, err = c.GetSystemCpuInformation(context.Background(), &empty.Empty{})
+		gpuInfo, err = c.GetSystemGpuInformation(context.Background(), &empty.Empty{})
+		memInfo, err = c.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
+
+		if err != nil {
+			fmt.Println("Error")
+		}
+
+		var cpuList []model.Cpu
+		for _, cpu := range cpuInfo.GetCpuList() {
+			cpuList = append(cpuList, model.UnmarshallCPU(cpu))
+		}
+
+		var gpuList []model.Gpu
+		for _, gpu := range gpuInfo.GetGpuList() {
+			gpuList = append(gpuList, model.UnmarshallGPU(gpu))
+		}
+
+		// Update service information to the cluster schema
+		if zookeeper.ServicesRegistry[newServiceNodeUUID] != nil {
+			zookeeper.ServicesRegistry[newServiceNodeUUID] = &model.ServiceInfo{
+				CpuList: cpuList,
+				GpuList: gpuList,
+				Memory:  model.UnmarshallMemory(memInfo),
+				SysInfo: model.UnmarshallSysInfo(sysInfo),
+			}
+		}
+	}
 }

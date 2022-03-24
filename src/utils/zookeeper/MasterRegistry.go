@@ -3,10 +3,15 @@ package zookeeper
 import (
 	"github.com/go-zookeeper/zk"
 	"log"
+	"yako/src/model"
 )
 
 const (
 	MasterRegistryZnode = "/master_registry"
+)
+
+var (
+	MasterRegistry map[string]*model.ServiceInfo // Masters list
 )
 
 // CreateMasterRegistryZnode will only be run once
@@ -22,4 +27,18 @@ func CreateMasterRegistryZnode() {
 		}
 		log.Printf("Master Registry successfully created at %s", path)
 	}
+}
+
+// RegisterToMasterCluster CreateMasterRegistryZnode registers an ephemeral znode for the current YakoMaster
+// Called on YakoMaster start up
+func RegisterToMasterCluster(yakoMasterAddress string) string {
+	// Create YakoMaster ephemeral znode
+	path, err := Zookeeper.Create(RegistryZnode+"/m_", []byte(yakoMasterAddress), zk.FlagEphemeral|zk.FlagSequence, zk.WorldACL(zk.PermAll))
+	if err != nil {
+		log.Fatalf("Error while adding %s znode to Master Registry", path)
+	}
+
+	log.Printf("Registered to the Master Registry: %s", path)
+
+	return path
 }

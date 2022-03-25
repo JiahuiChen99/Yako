@@ -9,3 +9,10 @@ type ServiceInfo struct {
 	GpuList []Gpu
 	Memory  Memory
 }
+
+// Response struct represents the final response struct transferred back to
+// the client side
+type Response struct {
+	YakoMasters map[string]*ServiceInfo `json:"yako_masters"`
+	YakoAgents  map[string]*ServiceInfo `json:"yako_agents"`
+}

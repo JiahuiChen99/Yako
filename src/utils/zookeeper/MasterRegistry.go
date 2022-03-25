@@ -29,7 +29,7 @@ func CreateMasterRegistryZnode() {
 	}
 }
 
-// RegisterToMasterCluster CreateMasterRegistryZnode registers an ephemeral znode for the current YakoMaster
+// RegisterToMasterCluster registers an ephemeral znode for the current YakoMaster
 // Called on YakoMaster start up
 func RegisterToMasterCluster(yakoMasterAddress string) string {
 	// Create YakoMaster ephemeral znode

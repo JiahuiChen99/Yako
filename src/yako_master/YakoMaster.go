@@ -54,10 +54,14 @@ func registerMasterSystemInfo() {
 	memInfo := mem.GetResources().(model.Memory)
 
 	// Add data to the master registry object
-	zookeeper.MasterRegistry[zn_uuid].SysInfo = sysInfo
-	zookeeper.MasterRegistry[zn_uuid].CpuList = cpuInfo
-	zookeeper.MasterRegistry[zn_uuid].GpuList = gpuInfo
-	zookeeper.MasterRegistry[zn_uuid].Memory = memInfo
+	if zookeeper.MasterRegistry[zn_uuid] == nil {
+		zookeeper.MasterRegistry[zn_uuid] = &model.ServiceInfo{
+			CpuList: cpuInfo,
+			GpuList: gpuInfo,
+			Memory:  memInfo,
+			SysInfo: sysInfo,
+		}
+	}
 }
 
 func main() {

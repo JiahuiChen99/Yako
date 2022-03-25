@@ -52,6 +52,12 @@ func registerMasterSystemInfo() {
 	gpuInfo := gpu.GetResources().([]model.Gpu)
 	mem := model.Memory{}
 	memInfo := mem.GetResources().(model.Memory)
+
+	// Add data to the master registry object
+	zookeeper.MasterRegistry[zn_uuid].SysInfo = sysInfo
+	zookeeper.MasterRegistry[zn_uuid].CpuList = cpuInfo
+	zookeeper.MasterRegistry[zn_uuid].GpuList = gpuInfo
+	zookeeper.MasterRegistry[zn_uuid].Memory = memInfo
 }
 
 func main() {

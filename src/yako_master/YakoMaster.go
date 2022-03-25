@@ -40,6 +40,14 @@ func APIServer() {
 	}
 }
 
+// registerMasterSystemInfo gets YakoMaster system information
+// and saves it to the regsitry
+func registerMasterSystemInfo() {
+	// Get all the information
+	sf := model.SysInfo{}
+	sysInfo := sf.GetResources().(model.SysInfo)
+}
+
 func main() {
 	// YakoMaster socket address
 	port := os.Args[1]
@@ -50,6 +58,9 @@ func main() {
 	zookeeper.CreateMasterRegistryZnode()
 	// Add YakoMaster to Master Registry
 	zn_uuid = zookeeper.RegisterToMasterCluster(addr)
+
+	registerMasterSystemInfo()
+
 	// Channel for services registration events
 	newService := make(chan string)
 	zookeeper.NewServiceChan = newService

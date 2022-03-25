@@ -46,6 +46,8 @@ func registerMasterSystemInfo() {
 	// Get all the information
 	sf := model.SysInfo{}
 	sysInfo := sf.GetResources().(model.SysInfo)
+	cpu := model.Cpu{}
+	cpuInfo := cpu.GetResources().(model.Cpu)
 }
 
 func main() {

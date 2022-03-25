@@ -47,9 +47,9 @@ func registerMasterSystemInfo() {
 	sf := model.SysInfo{}
 	sysInfo := sf.GetResources().(model.SysInfo)
 	cpu := model.Cpu{}
-	cpuInfo := cpu.GetResources().(model.Cpu)
+	cpuInfo := cpu.GetResources().([]model.Cpu)
 	gpu := model.Gpu{}
-	gpuInfo := gpu.GetResources().(model.Gpu)
+	gpuInfo := gpu.GetResources().([]model.Gpu)
 	mem := model.Memory{}
 	memInfo := mem.GetResources().(model.Memory)
 }

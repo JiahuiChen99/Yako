@@ -58,7 +58,7 @@ func RegisterToCluster(yakoNodeAddress string) string {
 
 	log.Printf("Registered to the Service Registry: %s", path)
 
-	return path
+	return path[len(RegistryZnode+"/"):]
 }
 
 // updateServices is called whenever an event happens in zookeeper
@@ -101,13 +101,13 @@ func GetAllServiceAddresses() {
 
 		// Add the socket to the service registry list
 		socketPath := string(socket[:])
-		if ServicesRegistry[yakoagentPath] == nil {
+		if ServicesRegistry[service] == nil {
 			// Store socket path in the registry
-			ServicesRegistry[yakoagentPath] = &model.ServiceInfo{
+			ServicesRegistry[service] = &model.ServiceInfo{
 				Socket: socketPath,
 			}
 			// A new service has connected
-			NewServiceChan <- yakoagentPath
+			NewServiceChan <- service
 		}
 		go WatchServices(yakoagentWatch)
 	}

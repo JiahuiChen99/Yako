@@ -28,6 +28,7 @@ func NewZookeeper() {
 
 	Zookeeper = zookeeper
 	ServicesRegistry = make(map[string]*model.ServiceInfo)
+	MasterRegistry = make(map[string]*model.ServiceInfo)
 }
 
 // CreateServiceRegistryZnode will only be ran once

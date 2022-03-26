@@ -8,11 +8,17 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"log"
+	"os"
 	"yako/src/grpc/yako"
 	"yako/src/model"
 	"yako/src/utils/directory_util"
 	"yako/src/utils/zookeeper"
 	"yako/src/yako_master/API"
+)
+
+var (
+	addr    = "" // Socket ip + port
+	zn_uuid = ""
 )
 
 func APIServer() {
@@ -27,15 +33,49 @@ func APIServer() {
 	API.AddRoutes(router)
 
 	// TODO: Use environment variables or secrets managers like Hashicorp Vault
-	err := router.Run(":8001")
+	err := router.Run(addr)
 	if err != nil {
 		// TODO: Use logger
 		panic("API gin Server could not be started!")
 	}
 }
 
+// registerMasterSystemInfo gets YakoMaster system information
+// and saves it to the regsitry
+func registerMasterSystemInfo() {
+	// Get all the information
+	sf := model.SysInfo{}
+	sysInfo := sf.GetResources().(model.SysInfo)
+	cpu := model.Cpu{}
+	cpuInfo := cpu.GetResources().([]model.Cpu)
+	gpu := model.Gpu{}
+	gpuInfo := gpu.GetResources().([]model.Gpu)
+	mem := model.Memory{}
+	memInfo := mem.GetResources().(model.Memory)
+
+	// Add data to the master registry object
+	if zookeeper.MasterRegistry[zn_uuid] == nil {
+		zookeeper.MasterRegistry[zn_uuid] = &model.ServiceInfo{
+			CpuList: cpuInfo,
+			GpuList: gpuInfo,
+			Memory:  memInfo,
+			SysInfo: sysInfo,
+		}
+	}
+}
+
 func main() {
+	// YakoMaster socket address
+	port := os.Args[1]
+	addr = fmt.Sprintf("localhost:%s", port)
+
 	zookeeper.NewZookeeper()
+	// Attempt to create Master Registry
+	zookeeper.CreateMasterRegistryZnode()
+	// Add YakoMaster to Master Registry
+	zn_uuid = zookeeper.RegisterToMasterCluster(addr)
+
+	registerMasterSystemInfo()
 
 	// Channel for services registration events
 	newService := make(chan string)

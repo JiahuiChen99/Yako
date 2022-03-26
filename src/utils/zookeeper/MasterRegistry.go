@@ -40,5 +40,5 @@ func RegisterToMasterCluster(yakoMasterAddress string) string {
 
 	log.Printf("Registered to the Master Registry: %s", path)
 
-	return path
+	return path[len(MasterRegistryZnode+"/"):]
 }

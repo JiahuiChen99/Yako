@@ -128,12 +128,10 @@ func main() {
 
 		// Update service information to the cluster schema
 		if zookeeper.ServicesRegistry[newServiceNodeUUID] != nil {
-			zookeeper.ServicesRegistry[newServiceNodeUUID] = &model.ServiceInfo{
-				CpuList: cpuList,
-				GpuList: gpuList,
-				Memory:  model.UnmarshallMemory(memInfo),
-				SysInfo: model.UnmarshallSysInfo(sysInfo),
-			}
+			newServiceSocket.CpuList = cpuList
+			newServiceSocket.GpuList = gpuList
+			newServiceSocket.SysInfo = model.UnmarshallSysInfo(sysInfo)
+			newServiceSocket.Memory = model.UnmarshallMemory(memInfo)
 		}
 	}
 }

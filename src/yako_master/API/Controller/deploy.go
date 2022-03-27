@@ -3,6 +3,7 @@ package Controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"yako/src/model"
 	"yako/src/utils/directory_util"
 	"yako/src/yako_master/API/utils"
 )
@@ -25,6 +26,12 @@ func UploadApp(c *gin.Context) {
 		err := utils.InternalServerError(saveErr.Error())
 		c.JSON(err.Status, err)
 		return
+	}
+
+	// Get the app's resources configuration
+	var config model.Config
+	if err := c.ShouldBind(&config); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	// File uploaded and stored

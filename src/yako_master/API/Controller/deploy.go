@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"yako/src/model"
 	"yako/src/utils/directory_util"
+	"yako/src/utils/zookeeper"
 	"yako/src/yako_master/API/utils"
 )
 
@@ -55,11 +56,21 @@ func findYakoAgents(config model.Config) {
 	for agentID, agentInfo := range zookeeper.ServicesRegistry {
 		// Set brownie points to 0
 		browniePoints = 0
-
+		compliesWithCPUCores(agentInfo, config, &browniePoints)
 		//pq.add(agentID, browniePoints)
 	}
 
 	// Select the top X ones to be recommended
 	// X is the number of nodes specified by the user
 
+}
+
+// compliesWithCPUCores check if the CPU has the specified cores
+// If it does, it adds a brownie point
+func compliesWithCPUCores(agent *model.ServiceInfo, config model.Config, browniePoints *uint64) {
+	for _, cpu := range agent.CpuList {
+		if uint64(len(cpu.Cores)) >= config.CpuCores {
+			*browniePoints++
+		}
+	}
 }

@@ -7,3 +7,41 @@ type Config struct {
 	GpuCores uint64 `json:"gpu_cores"`
 	Memory   uint64 `json:"memory"`
 }
+
+type YakoAgent struct {
+	ID            string `json:"id"`
+	BrowniePoints uint64 `json:"brownie_points"`
+	Index         int    // The index of the item in the heap.
+}
+
+type PQNodes []*YakoAgent
+
+func (h PQNodes) Len() int {
+	return len(h)
+}
+
+func (h PQNodes) Less(i, j int) bool {
+	return h[i].BrowniePoints < h[j].BrowniePoints
+}
+
+func (h PQNodes) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+	h[i].Index = i
+	h[j].Index = j
+}
+
+func (h *PQNodes) Push(agent interface{}) {
+	// Push and Pop use pointer receivers because they modify the slice's length,
+	// not just its contents.
+	*h = append(*h, agent.(*YakoAgent))
+}
+
+func (h *PQNodes) Pop() interface{} {
+	old := *h
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil  // Avoid memory leak
+	item.Index = -1 // For safety
+	*h = old[0 : n-1]
+	return item
+}

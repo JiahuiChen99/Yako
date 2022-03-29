@@ -39,7 +39,7 @@ func UploadApp(c *gin.Context) {
 	recommendedNodes := findYakoAgents(config)
 
 	// File uploaded and stored
-	c.JSON(http.StatusOK, map[string]string{"status": "uploaded successfully"})
+	c.JSON(http.StatusOK, recommendedNodes)
 }
 
 // findYakoAgents calculates and finds the top X best & suitable

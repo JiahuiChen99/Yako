@@ -36,7 +36,7 @@ func UploadApp(c *gin.Context) {
 	}
 
 	// Compute and find the best nodes to deploy the app
-	findYakoAgents(config)
+	recommendedNodes := findYakoAgents(config)
 
 	// File uploaded and stored
 	c.JSON(http.StatusOK, map[string]string{"status": "uploaded successfully"})
@@ -46,7 +46,7 @@ func UploadApp(c *gin.Context) {
 // yakoagents where the app could be deployed according to the
 // requested resources from the client
 // Default X = 3
-func findYakoAgents(config model.Config) {
+func findYakoAgents(config model.Config) []*model.YakoAgent {
 	// Priority queue with max heap to rank higher the nodes
 	// with more brownie points
 

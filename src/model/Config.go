@@ -15,24 +15,29 @@ type YakoAgent struct {
 
 type PQNodes []*YakoAgent
 
+// Len returns the number of elements in the priority queue
 func (h PQNodes) Len() int {
 	return len(h)
 }
 
+// Less is the comparator used by the heap data structure
+// to order my the brownie points property
 func (h PQNodes) Less(i, j int) bool {
 	return h[i].BrowniePoints > h[j].BrowniePoints
 }
 
+// Swap elements
 func (h PQNodes) Swap(i, j int) {
 	h[i], h[j] = h[j], h[i]
 }
 
+// Push adds a new yakoagent to the max heap
 func (h *PQNodes) Push(agent interface{}) {
-	// Push and Pop use pointer receivers because they modify the slice's length,
-	// not just its contents.
 	*h = append(*h, agent.(*YakoAgent))
 }
 
+// Pop retrieves the root element which is the
+// yakoagent with the most brownie points
 func (h *PQNodes) Pop() interface{} {
 	old := *h
 	n := len(old)

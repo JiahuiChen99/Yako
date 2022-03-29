@@ -20,7 +20,7 @@ func (h PQNodes) Len() int {
 }
 
 func (h PQNodes) Less(i, j int) bool {
-	return h[i].BrowniePoints < h[j].BrowniePoints
+	return h[i].BrowniePoints > h[j].BrowniePoints
 }
 
 func (h PQNodes) Swap(i, j int) {

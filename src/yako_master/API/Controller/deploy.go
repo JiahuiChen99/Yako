@@ -1,6 +1,7 @@
 package Controller
 
 import (
+	"container/heap"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"yako/src/model"
@@ -49,8 +50,10 @@ func UploadApp(c *gin.Context) {
 func findYakoAgents(config model.Config) []*model.YakoAgent {
 	// Priority queue with max heap to rank higher the nodes
 	// with more brownie points
+	pq := make(model.PQNodes, len(zookeeper.ServicesRegistry))
 
 	var browniePoints uint64
+	counter := 0
 	// Loop through all the available yakoagents, computes the
 	// brownie points and adds it to a priority queue
 	for agentID, agentInfo := range zookeeper.ServicesRegistry {
@@ -58,8 +61,13 @@ func findYakoAgents(config model.Config) []*model.YakoAgent {
 		browniePoints = 0
 		compliesWithCPUCores(agentInfo, config, &browniePoints)
 		compliesWithMemory(agentInfo, config, &browniePoints)
-		//pq.add(agentID, browniePoints)
+		pq[counter] = &model.YakoAgent{
+			ID:            agentID,
+			BrowniePoints: browniePoints,
+		}
+		counter++
 	}
+	heap.Init(&pq)
 
 	// Select the top X ones to be recommended
 	// X is the number of nodes specified by the user

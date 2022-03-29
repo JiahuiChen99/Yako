@@ -71,7 +71,16 @@ func findYakoAgents(config model.Config) []*model.YakoAgent {
 
 	// Select the top X ones to be recommended
 	// X is the number of nodes specified by the user
+	x := pq.Len()
+	if x > 3 {
+		x = 3
+	}
+	recommendedYakoAgents := make([]*model.YakoAgent, x)
+	for i := 0; i < x; i++ {
+		recommendedYakoAgents[i] = heap.Pop(&pq).(*model.YakoAgent)
+	}
 
+	return recommendedYakoAgents
 }
 
 // compliesWithCPUCores check if the CPU has the specified cores

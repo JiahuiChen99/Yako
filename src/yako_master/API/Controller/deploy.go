@@ -87,7 +87,7 @@ func findYakoAgents(config model.Config) []*model.YakoAgent {
 // If it does, it adds a brownie point
 func compliesWithCPUCores(agent *model.ServiceInfo, config model.Config, browniePoints *uint64) {
 	for _, cpu := range agent.CpuList {
-		if uint64(len(cpu.Cores)) >= config.CpuCores {
+		if uint64(len(cpu.Cores)) >= config.SysCpuCores {
 			*browniePoints++
 		}
 	}
@@ -97,7 +97,7 @@ func compliesWithCPUCores(agent *model.ServiceInfo, config model.Config, brownie
 // free memory from the system can be allocated for the app
 // If it does, it adds a brownie point
 func compliesWithMemory(agent *model.ServiceInfo, config model.Config, browniePoints *uint64) {
-	if agent.Memory.Free >= config.Memory {
+	if agent.Memory.Free >= config.SysMemory {
 		*browniePoints++
 	}
 }

@@ -3,11 +3,11 @@ package model
 // Config is the to be deployed app resources'
 // configuration received from the client
 type Config struct {
-	SysCpuCores uint64 `json:"sys_cpu_cores"`
-	SysGpuCores uint64 `json:"sys_gpu_cores"`
-	SysMemory   uint64 `json:"sys_ram"`
-	AppCpuCores uint64 `json:"app_cpu_cores"`
-	AppMemory   uint64 `json:"app_ram"`
+	SysCpuCores uint64 `json:"sys_cpu_cores" form:"sys_cpu_cores"`
+	SysGpuCores uint64 `json:"sys_gpu_cores" form:"sys_gpu_cores"`
+	SysMemory   uint64 `json:"sys_ram" form:"sys_ram"`
+	AppCpuCores uint64 `json:"app_cpu_cores" form:"app_cpu_cores"`
+	AppMemory   uint64 `json:"app_ram" form:"app_ram"`
 }
 
 type YakoAgent struct {

@@ -46,6 +46,17 @@ func main() {
 	// Add YakoAgent to Service Registry for service discovery
 	zn_uuid = zookeeper.RegisterToCluster(fmt.Sprintf("%s", lis.Addr().String()))
 
+	// UNIX signal channel for events
+	signalChannel := make(chan os.Signal, 1)
+	// Signals to trap
+	signal.Notify(signalChannel,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGKILL)
+
+	// Goroutine for signal processing
+	go signalHandler(signalChannel)
+
 	// Start gRPC server
 	s := grpc.NewServer()
 	yako.RegisterNodeServiceServer(s, &yako_node_service.YakoNodeServer{})

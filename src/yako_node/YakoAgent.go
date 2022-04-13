@@ -6,6 +6,8 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
+	"syscall"
 	"yako/src/grpc/yako"
 	"yako/src/utils/zookeeper"
 	"yako/src/yako_node/services"
@@ -15,6 +17,18 @@ var (
 	// TODO: Unregister node when yakoagent is killed
 	zn_uuid = ""
 )
+
+// signalHandler Traps UNIX SIGINT, SIGTERM signals and processes them
+func signalHandler(signalChannel chan os.Signal) {
+	for {
+		// Receive the SIGNAL ID
+		sig := <-signalChannel
+		switch sig {
+		case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL:
+
+		}
+	}
+}
 
 func main() {
 	port := os.Args[1]

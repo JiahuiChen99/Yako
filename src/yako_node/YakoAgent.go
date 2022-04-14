@@ -25,7 +25,8 @@ func signalHandler(signalChannel chan os.Signal) {
 		sig := <-signalChannel
 		switch sig {
 		case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL:
-
+			// Shutdown YakoAgent gracefully with no errors
+			os.Exit(0)
 		}
 	}
 }

@@ -21,7 +21,7 @@ var (
 // NewZookeeper will create a new singleton of Zookeeper client
 func NewZookeeper() {
 	// Connect to Zookeeper
-	zookeeper, _, err := zk.Connect([]string{"127.0.0.1:2181"}, time.Second)
+	zookeeper, _, err := zk.Connect([]string{"127.0.0.1:2181"}, time.Second*10000000)
 	if err != nil {
 		log.Fatalln("Error connecting to Apache Zookeeper instance")
 	}
@@ -123,6 +123,9 @@ func WatchServices(watch <-chan zk.Event) {
 		delete(ServicesRegistry, event.Path)
 		fmt.Println("Service at " + event.Path + " znode, has been disconnected")
 	case zk.EventNodeChildrenChanged:
+		// TODO: Fix multi watch
+		// On node update event from /service_registry, a new watch will be added to the other
+		// nodes which are already being watched
 		updateServices()
 	default:
 		fmt.Println(event)

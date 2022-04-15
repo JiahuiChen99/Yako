@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	// TODO: Unregister node when yakoagent is killed
-	zn_uuid = ""
+	znUUID = ""
 )
 
 // signalHandler Traps UNIX SIGINT, SIGTERM signals and processes them
@@ -26,7 +25,7 @@ func signalHandler(signalChannel chan os.Signal) {
 		switch sig {
 		case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL:
 			// Unregister from service registry
-			zookeeper.Unregister(zn_uuid)
+			zookeeper.Unregister(znUUID)
 			// Shutdown YakoAgent gracefully with no errors
 			os.Exit(0)
 		}
@@ -47,7 +46,7 @@ func main() {
 	// Attempt to create Service Registry
 	zookeeper.CreateServiceRegistryZnode()
 	// Add YakoAgent to Service Registry for service discovery
-	zn_uuid = zookeeper.RegisterToCluster(fmt.Sprintf("%s", lis.Addr().String()))
+	znUUID = zookeeper.RegisterToCluster(fmt.Sprintf("%s", lis.Addr().String()))
 
 	// UNIX signal channel for events
 	signalChannel := make(chan os.Signal, 1)

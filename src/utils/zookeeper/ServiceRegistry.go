@@ -131,11 +131,11 @@ func WatchServices(watch <-chan zk.Event) {
 
 // Unregister receives a zookeeper node UUID, unregisters it from the service registry
 // and closes the established connection
-func Unregister(zn_uuid string) {
-	log.Println(fmt.Sprintf("Unregistering %s from Service Registry", zn_uuid))
+func Unregister(znUUID string) {
+	log.Println(fmt.Sprintf("Unregistering %s from Service Registry", znUUID))
 
 	// Unregister node from Service Registry
-	if err := Zookeeper.Delete(RegistryZnode+"/"+zn_uuid, -1); err != nil {
+	if err := Zookeeper.Delete(RegistryZnode+"/"+znUUID, -1); err != nil {
 		log.Fatalln(err)
 	}
 

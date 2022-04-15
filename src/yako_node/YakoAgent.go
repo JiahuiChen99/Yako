@@ -15,6 +15,7 @@ import (
 
 var (
 	znUUID = ""
+	server *grpc.Server
 )
 
 // signalHandler Traps UNIX SIGINT, SIGTERM signals and processes them
@@ -24,6 +25,8 @@ func signalHandler(signalChannel chan os.Signal) {
 		sig := <-signalChannel
 		switch sig {
 		case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL:
+			// Shutdown gRPC server
+			server.GracefulStop()
 			// Unregister from service registry
 			zookeeper.Unregister(znUUID)
 			// Shutdown YakoAgent gracefully with no errors
@@ -60,10 +63,10 @@ func main() {
 	go signalHandler(signalChannel)
 
 	// Start gRPC server
-	s := grpc.NewServer()
-	yako.RegisterNodeServiceServer(s, &yako_node_service.YakoNodeServer{})
+	server = grpc.NewServer()
+	yako.RegisterNodeServiceServer(server, &yako_node_service.YakoNodeServer{})
 
-	if err := s.Serve(lis); err != nil {
+	if err := server.Serve(lis); err != nil {
 		log.Fatalln(err)
 	}
 }

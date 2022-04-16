@@ -39,6 +39,12 @@ func UploadApp(c *gin.Context) {
 	// Compute and find the best nodes to deploy the app
 	recommendedNodes := findYakoAgents(config)
 
+	// Check if automation is enabled
+	if autoDeploy := c.Query("autodeploy"); autoDeploy == "true" {
+		// Auto-deploy the app to the best computed node
+		// TODO: gRPC deploy
+	}
+
 	// File uploaded and stored
 	c.JSON(http.StatusOK, recommendedNodes)
 }

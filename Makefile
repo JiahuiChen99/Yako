@@ -4,6 +4,12 @@ gen:
 clean:
 	rm src/grpc/pb/*.go
 
+run_master:
+	go run src/yako_master/YakoMaster.go
+
+build_master:
+	go build src/yako_master/YakoMaster.go
+
 run_agent:
 	go run src/yako_node/YakoAgent.go
 

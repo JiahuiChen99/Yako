@@ -83,15 +83,6 @@ func GetAllServiceAddresses() {
 
 	for _, service := range yakoagents {
 		yakoagentPath := fmt.Sprintf("%s/%s", RegistryZnode, service)
-		exists, _, yakoagentWatch, err = Zookeeper.ExistsW(yakoagentPath)
-		if err != nil {
-			log.Fatalln("Error while trying to check for " + yakoagentPath)
-		}
-
-		// Race condition, check if yakoagent exists
-		if !exists {
-			continue
-		}
 
 		// Get yakoagent socket
 		socket, _, err := Zookeeper.Get(yakoagentPath)
@@ -99,7 +90,7 @@ func GetAllServiceAddresses() {
 			log.Fatalln("Error while trying to fetch data from " + yakoagentPath)
 		}
 
-		// Add the socket to the service registry list
+		// Add the socket to the service registry list if it doesn't exist
 		socketPath := string(socket[:])
 		if ServicesRegistry[service] == nil {
 			// Store socket path in the registry
@@ -108,8 +99,21 @@ func GetAllServiceAddresses() {
 			}
 			// A new service has connected
 			NewServiceChan <- service
+
+			// Check for existence of the newly added yakoagent
+			exists, _, yakoagentWatch, err = Zookeeper.ExistsW(yakoagentPath)
+			if err != nil {
+				log.Fatalln("Error while trying to check for " + yakoagentPath)
+			}
+
+			// Race condition, check if yakoagent exists
+			if !exists {
+				continue
+			}
+
+			// Add a watcher for newly added nodes
+			go WatchServices(yakoagentWatch)
 		}
-		go WatchServices(yakoagentWatch)
 	}
 }
 
@@ -123,9 +127,6 @@ func WatchServices(watch <-chan zk.Event) {
 		delete(ServicesRegistry, event.Path)
 		fmt.Println("Service at " + event.Path + " znode, has been disconnected")
 	case zk.EventNodeChildrenChanged:
-		// TODO: Fix multi watch
-		// On node update event from /service_registry, a new watch will be added to the other
-		// nodes which are already being watched
 		updateServices()
 	default:
 		fmt.Println(event)

@@ -1,8 +1,8 @@
 package model
 
 import (
+	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"syscall"
-	"yako/src/grpc/yako"
 )
 
 // SysInfo

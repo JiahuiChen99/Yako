@@ -3,17 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/JiahuiChen99/Yako/src/grpc/yako"
+	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
+	"github.com/JiahuiChen99/Yako/src/utils/zookeeper"
+	"github.com/JiahuiChen99/Yako/src/yako_master/API"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"log"
 	"os"
-	"yako/src/grpc/yako"
-	"yako/src/model"
-	"yako/src/utils/directory_util"
-	"yako/src/utils/zookeeper"
-	"yako/src/yako_master/API"
 )
 
 var (

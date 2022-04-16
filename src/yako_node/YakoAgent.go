@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/JiahuiChen99/Yako/src/grpc/yako"
+	"github.com/JiahuiChen99/Yako/src/utils/zookeeper"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
-	"yako/src/grpc/yako"
-	"yako/src/utils/zookeeper"
-	"yako/src/yako_node/services"
 )
 
 var (

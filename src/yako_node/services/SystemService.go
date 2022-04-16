@@ -2,9 +2,9 @@ package yako_node_service
 
 import (
 	"context"
+	"github.com/JiahuiChen99/Yako/src/grpc/yako"
+	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/golang/protobuf/ptypes/empty"
-	"yako/src/grpc/yako"
-	"yako/src/model"
 )
 
 // YakoNodeServer implements NodeServiceServer interface

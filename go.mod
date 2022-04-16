@@ -1,4 +1,4 @@
-module yako
+module github.com/JiahuiChen99/Yako
 
 go 1.17
 

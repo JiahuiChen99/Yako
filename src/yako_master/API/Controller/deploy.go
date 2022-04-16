@@ -2,12 +2,12 @@ package Controller
 
 import (
 	"container/heap"
+	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
+	"github.com/JiahuiChen99/Yako/src/utils/zookeeper"
+	"github.com/JiahuiChen99/Yako/src/yako_master/API/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"yako/src/model"
-	"yako/src/utils/directory_util"
-	"yako/src/utils/zookeeper"
-	"yako/src/yako_master/API/utils"
 )
 
 // UploadApp handles the file that the user wants

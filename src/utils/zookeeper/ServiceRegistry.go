@@ -2,10 +2,10 @@ package zookeeper
 
 import (
 	"fmt"
+	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/go-zookeeper/zk"
 	"log"
 	"time"
-	"yako/src/model"
 )
 
 const (

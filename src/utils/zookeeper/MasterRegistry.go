@@ -1,9 +1,9 @@
 package zookeeper
 
 import (
+	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/go-zookeeper/zk"
 	"log"
-	"yako/src/model"
 )
 
 const (

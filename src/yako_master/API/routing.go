@@ -1,8 +1,8 @@
 package API
 
 import (
+	"github.com/JiahuiChen99/Yako/src/yako_master/API/Controller"
 	"github.com/gin-gonic/gin"
-	"yako/src/yako_master/API/Controller"
 )
 
 // AddRoutes specifies yakoAPI routes and its handlers

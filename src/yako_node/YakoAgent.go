@@ -36,8 +36,9 @@ func signalHandler(signalChannel chan os.Signal) {
 }
 
 func main() {
-	port := os.Args[1]
-	addr := fmt.Sprintf("localhost:%s", port)
+	ip := os.Args[1]
+	port := os.Args[2]
+	addr := fmt.Sprintf("%s:%s", ip, port)
 	log.Println("Starting YakoAgent at " + addr)
 
 	lis, err := net.Listen("tcp", addr)

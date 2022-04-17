@@ -46,7 +46,9 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	zookeeper.NewZookeeper()
+	zkIp := os.Args[3]
+	zkPort := os.Args[4]
+	zookeeper.NewZookeeper(zkIp, zkPort)
 	// Attempt to create Service Registry
 	zookeeper.CreateServiceRegistryZnode()
 	// Add YakoAgent to Service Registry for service discovery

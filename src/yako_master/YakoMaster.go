@@ -66,8 +66,9 @@ func registerMasterSystemInfo() {
 
 func main() {
 	// YakoMaster socket address
-	port := os.Args[1]
-	addr = fmt.Sprintf("localhost:%s", port)
+	ip := os.Args[1]
+	port := os.Args[2]
+	addr = fmt.Sprintf("%s:%s", ip, port)
 
 	zookeeper.NewZookeeper()
 	// Attempt to create Master Registry

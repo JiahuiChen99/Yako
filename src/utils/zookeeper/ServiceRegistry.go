@@ -19,9 +19,10 @@ var (
 )
 
 // NewZookeeper will create a new singleton of Zookeeper client
-func NewZookeeper() {
+func NewZookeeper(zkIp string, zkPort string) {
+	zkSocket := fmt.Sprintf("%s:%s", zkIp, zkPort)
 	// Connect to Zookeeper
-	zookeeper, _, err := zk.Connect([]string{"127.0.0.1:2181"}, time.Second*10000000)
+	zookeeper, _, err := zk.Connect([]string{zkSocket}, time.Second*10)
 	if err != nil {
 		log.Fatalln("Error connecting to Apache Zookeeper instance")
 	}

@@ -36,8 +36,9 @@ func signalHandler(signalChannel chan os.Signal) {
 }
 
 func main() {
-	port := os.Args[1]
-	addr := fmt.Sprintf("localhost:%s", port)
+	ip := os.Args[1]
+	port := os.Args[2]
+	addr := fmt.Sprintf("%s:%s", ip, port)
 	log.Println("Starting YakoAgent at " + addr)
 
 	lis, err := net.Listen("tcp", addr)
@@ -45,7 +46,9 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	zookeeper.NewZookeeper()
+	zkIp := os.Args[3]
+	zkPort := os.Args[4]
+	zookeeper.NewZookeeper(zkIp, zkPort)
 	// Attempt to create Service Registry
 	zookeeper.CreateServiceRegistryZnode()
 	// Add YakoAgent to Service Registry for service discovery

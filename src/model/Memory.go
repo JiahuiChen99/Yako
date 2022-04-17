@@ -2,11 +2,11 @@ package model
 
 import (
 	"bufio"
+	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
-	"yako/src/grpc/yako"
 )
 
 // Memory

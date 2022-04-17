@@ -2,11 +2,11 @@ package Controller
 
 import (
 	"encoding/json"
+	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/zookeeper"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"yako/src/model"
-	"yako/src/utils/zookeeper"
 )
 
 // Cluster returns the cluster schema

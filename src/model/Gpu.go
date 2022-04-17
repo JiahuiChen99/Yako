@@ -2,10 +2,10 @@ package model
 
 import (
 	"bufio"
+	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"os"
 	"regexp"
 	"strconv"
-	"yako/src/grpc/yako"
 )
 
 // Gpu

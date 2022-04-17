@@ -70,7 +70,9 @@ func main() {
 	port := os.Args[2]
 	addr = fmt.Sprintf("%s:%s", ip, port)
 
-	zookeeper.NewZookeeper()
+	zkIp := os.Args[3]
+	zkPort := os.Args[4]
+	zookeeper.NewZookeeper(zkIp, zkPort)
 	// Attempt to create Master Registry
 	zookeeper.CreateMasterRegistryZnode()
 	// Add YakoMaster to Master Registry

@@ -116,7 +116,7 @@ func main() {
 		memInfo, err = c.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
 
 		if err != nil {
-			fmt.Println("Error")
+			log.Println(err)
 		}
 
 		var cpuList []model.Cpu

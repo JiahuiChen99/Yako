@@ -124,23 +124,22 @@ func main() {
 		var gpuInfo *yako.GpuList
 		var memInfo *yako.Memory
 
+		var gpuList []model.Gpu
+		var cpuList []model.Cpu
+
 		sysInfo, err = c.GetSystemInformation(context.Background(), &empty.Empty{})
 		cpuInfo, err = c.GetSystemCpuInformation(context.Background(), &empty.Empty{})
 		gpuInfo, err = c.GetSystemGpuInformation(context.Background(), &empty.Empty{})
-		memInfo, err = c.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
-
 		if err != nil {
 			log.Println(err)
+		} else {
+			for _, gpu := range gpuInfo.GetGpuList() {
+				gpuList = append(gpuList, model.UnmarshallGPU(gpu))
+			}
 		}
-
-		var cpuList []model.Cpu
+		memInfo, err = c.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
 		for _, cpu := range cpuInfo.GetCpuList() {
 			cpuList = append(cpuList, model.UnmarshallCPU(cpu))
-		}
-
-		var gpuList []model.Gpu
-		for _, gpu := range gpuInfo.GetGpuList() {
-			gpuList = append(gpuList, model.UnmarshallGPU(gpu))
 		}
 
 		// Update service information to the cluster schema

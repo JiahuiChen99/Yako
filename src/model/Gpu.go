@@ -24,7 +24,7 @@ var (
 	twoColRegexGPU = regexp.MustCompile(":( +)?(\t+)?( +)?")
 )
 
-func (g Gpu) GetResources() interface{} {
+func (g Gpu) GetResources() (interface{}, error) {
 	// Check if Nvidia drivers are installed
 	if _, err := os.Stat("/proc/driver/nvidia"); os.IsNotExist(err) {
 		panic("Please install nvidia drivers")

@@ -16,7 +16,7 @@ type SysInfo struct {
 }
 
 // GetResources retrives uname information
-func (s SysInfo) GetResources() interface{} {
+func (s SysInfo) GetResources() (interface{}, error) {
 	var uname syscall.Utsname
 
 	if err := syscall.Uname(&uname); err != nil {
@@ -30,7 +30,7 @@ func (s SysInfo) GetResources() interface{} {
 	sysinfo.Version = parseUname(uname.Version)
 	sysinfo.Machine = parseUname(uname.Machine)
 
-	return sysinfo
+	return sysinfo, nil
 }
 
 // parseUname

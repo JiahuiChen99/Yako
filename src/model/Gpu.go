@@ -3,6 +3,7 @@ package model
 import (
 	"bufio"
 	"github.com/JiahuiChen99/Yako/src/grpc/yako"
+	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -27,7 +28,8 @@ var (
 func (g Gpu) GetResources() (interface{}, error) {
 	// Check if Nvidia drivers are installed
 	if _, err := os.Stat("/proc/driver/nvidia"); os.IsNotExist(err) {
-		panic("Please install nvidia drivers")
+		log.Println("Please install nvidia drivers")
+		return nil, err
 	}
 
 	// Check for GPU information
@@ -86,7 +88,7 @@ func (g Gpu) GetResources() (interface{}, error) {
 		f.Close()
 	}
 
-	return gpuList
+	return gpuList, nil
 }
 
 // UnmarshallGPU converts protobuf gpu model into yako gpu model

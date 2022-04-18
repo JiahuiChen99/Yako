@@ -45,21 +45,35 @@ func APIServer() {
 func registerMasterSystemInfo() {
 	// Get all the information
 	sf := model.SysInfo{}
-	sysInfo := sf.GetResources().(model.SysInfo)
+	sysInfo, err := sf.GetResources()
+	if err != nil {
+		log.Println(err)
+	}
 	cpu := model.Cpu{}
-	cpuInfo := cpu.GetResources().([]model.Cpu)
+	cpuInfo, err := cpu.GetResources()
+	if err != nil {
+		log.Println(err)
+	}
 	gpu := model.Gpu{}
-	gpuInfo := gpu.GetResources().([]model.Gpu)
+	gpuInfo, err := gpu.GetResources()
+	if err != nil {
+		log.Println(err)
+	}
 	mem := model.Memory{}
-	memInfo := mem.GetResources().(model.Memory)
+	memInfo, err := mem.GetResources()
+	if err != nil {
+		log.Println(err)
+	}
 
 	// Add data to the master registry object
 	if zookeeper.MasterRegistry[zn_uuid] == nil {
+		// Try to type cast
+		gInfo, _ := gpuInfo.([]model.Gpu)
 		zookeeper.MasterRegistry[zn_uuid] = &model.ServiceInfo{
-			CpuList: cpuInfo,
-			GpuList: gpuInfo,
-			Memory:  memInfo,
-			SysInfo: sysInfo,
+			CpuList: cpuInfo.([]model.Cpu),
+			GpuList: gInfo,
+			Memory:  memInfo.(model.Memory),
+			SysInfo: sysInfo.(model.SysInfo),
 		}
 	}
 }

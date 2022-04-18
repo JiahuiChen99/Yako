@@ -30,7 +30,7 @@ var (
 
 // GetResources Retrieves information related to the system cpu
 // currently only Linux is supported
-func (c *Cpu) GetResources() interface{} {
+func (c *Cpu) GetResources() (interface{}, error) {
 	// Open the file
 	f, err := os.Open("/proc/cpuinfo")
 	if err != nil {
@@ -94,7 +94,7 @@ func (c *Cpu) GetResources() interface{} {
 		}
 	}
 
-	return cpusList
+	return cpusList, err
 }
 
 // saveCPU Stores a CPU data if everything is parsed

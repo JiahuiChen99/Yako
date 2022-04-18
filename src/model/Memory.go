@@ -22,7 +22,7 @@ var (
 	twoColRegexMemory = regexp.MustCompile(":( +)?")
 )
 
-func (m Memory) GetResources() interface{} {
+func (m Memory) GetResources() (interface{}, error) {
 	// Open the file
 	f, err := os.Open("/proc/meminfo")
 	if err != nil {
@@ -57,7 +57,7 @@ func (m Memory) GetResources() interface{} {
 		}
 	}
 
-	return memory
+	return memory, nil
 }
 
 // UnmarshallMemory converts protobuf memory model into yako memory model

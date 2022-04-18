@@ -13,14 +13,19 @@ type YakoNodeServer struct {
 
 func (ns *YakoNodeServer) GetSystemInformation(ctx context.Context, empty *empty.Empty) (*yako.SysInfo, error) {
 	sysinfo := model.SysInfo{}
-	i := sysinfo.GetResources().(model.SysInfo)
+	i, err := sysinfo.GetResources()
 
+	if err != nil {
+		return nil, err
+	}
+
+	sInfo := i.(model.SysInfo)
 	info := &yako.SysInfo{
-		SysName:  i.SysName,
-		Machine:  i.Machine,
-		Version:  i.Version,
-		Release:  i.Release,
-		NodeName: i.NodeName,
+		SysName:  sInfo.SysName,
+		Machine:  sInfo.Machine,
+		Version:  sInfo.Version,
+		Release:  sInfo.Release,
+		NodeName: sInfo.NodeName,
 	}
 
 	return info, nil
@@ -29,13 +34,17 @@ func (ns *YakoNodeServer) GetSystemInformation(ctx context.Context, empty *empty
 func (ns *YakoNodeServer) GetSystemCpuInformation(ctx context.Context, empty *empty.Empty) (*yako.CpuList, error) {
 	// Get system CPU information
 	cpu := model.Cpu{}
-	cpuInfo := cpu.GetResources().([]model.Cpu)
+	cpuInfo, err := cpu.GetResources()
+
+	if err != nil {
+		return nil, err
+	}
 
 	var cpuList []*yako.Cpu
 	var coresList []*yako.Core
 
 	// Build CPU list with gRPC structs
-	for _, cpu := range cpuInfo {
+	for _, cpu := range cpuInfo.([]model.Cpu) {
 		// Build CPU cores list with gRPC structs
 		for i := range cpu.Cores {
 			coresList = append(coresList, &yako.Core{
@@ -62,12 +71,17 @@ func (ns *YakoNodeServer) GetSystemCpuInformation(ctx context.Context, empty *em
 
 func (ns *YakoNodeServer) GetSystemGpuInformation(ctx context.Context, empty *empty.Empty) (*yako.GpuList, error) {
 	gpu := model.Gpu{}
-	gpuInfo := gpu.GetResources().([]model.Gpu)
+	gpuInfo, err := gpu.GetResources()
 
+	if err != nil {
+		return nil, err
+	}
+
+	gpuInfoData := gpuInfo.([]model.Gpu)
 	var gpuList []*yako.Gpu
 
 	// Build GPU list with gRPC structs
-	for _, gpu := range gpuInfo {
+	for _, gpu := range gpuInfoData {
 		gpuList = append(gpuList, &yako.Gpu{
 			GpuName: gpu.GpuName,
 			GpuID:   gpu.GpuID,
@@ -87,13 +101,19 @@ func (ns *YakoNodeServer) GetSystemGpuInformation(ctx context.Context, empty *em
 
 func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty *empty.Empty) (*yako.Memory, error) {
 	meminfo := model.Memory{}
-	i := meminfo.GetResources().(model.Memory)
+	i, err := meminfo.GetResources()
+
+	if err != nil {
+		return nil, err
+	}
+
+	mInfo := i.(model.Memory)
 
 	info := &yako.Memory{
-		Total:     i.Total,
-		Free:      i.Free,
-		FreeSwap:  i.FreeSwap,
-		TotalSwap: i.TotalSwap,
+		Total:     mInfo.Total,
+		Free:      mInfo.Free,
+		FreeSwap:  mInfo.FreeSwap,
+		TotalSwap: mInfo.TotalSwap,
 	}
 
 	return info, nil

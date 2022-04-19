@@ -13,4 +13,6 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/deploy", Controller.UploadApp)
 	// handler for cluster information
 	router.GET("/cluster", Controller.Cluster)
+	// handler for uploaded apps
+	router.GET("/cluster/apps", Controller.GetClusterApps)
 }

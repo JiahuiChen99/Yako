@@ -4,6 +4,9 @@ syntax = "proto3";
 // gRPC package
 package yako;
 
+// Go related package
+option go_package = "yako/";
+
 // Application Chunks
 message Chunk {
   bytes Content = 1;

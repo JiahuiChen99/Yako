@@ -1,0 +1,23 @@
+//deploy.proto
+syntax = "proto3";
+
+// gRPC package
+package yako;
+
+// Application Chunks
+message Chunk {
+  bytes Content = 1;
+}
+
+// Status code enums
+enum DeployStatusCode {
+  Unknown = 0;
+  Ok = 1;
+  Failed = 2;
+}
+
+// App deployment status
+message DeployStatus {
+  string Message = 1;
+  DeployStatusCode Code = 2;
+}

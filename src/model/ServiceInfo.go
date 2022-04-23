@@ -21,6 +21,6 @@ type Response struct {
 
 // Agent struct is used in the Service Registry
 type Agent struct {
-	ServiceInfo *ServiceInfo
-	GrpcClient  yako.NodeServiceClient
+	ServiceInfo *ServiceInfo           `json:"info"`
+	GrpcClient  yako.NodeServiceClient `json:"-"`
 }

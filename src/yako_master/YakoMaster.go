@@ -109,11 +109,11 @@ func main() {
 	for {
 		newServiceNodeUUID := <-newService
 		newServiceSocket := zookeeper.ServicesRegistry[newServiceNodeUUID]
-		log.Println("Call the new service " + newServiceSocket.Socket)
+		log.Println("Call the new service " + newServiceSocket.ServiceInfo.Socket)
 
-		cc, err := grpc.Dial(newServiceSocket.Socket, grpc.WithInsecure())
+		cc, err := grpc.Dial(newServiceSocket.ServiceInfo.Socket, grpc.WithInsecure())
 		if err != nil {
-			log.Fatalln("Error while dialing the service" + newServiceSocket.Socket)
+			log.Fatalln("Error while dialing the service" + newServiceSocket.ServiceInfo.Socket)
 		}
 		defer cc.Close()
 

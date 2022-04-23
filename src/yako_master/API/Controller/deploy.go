@@ -65,8 +65,8 @@ func findYakoAgents(config model.Config) []*model.YakoAgent {
 	for agentID, agentInfo := range zookeeper.ServicesRegistry {
 		// Set brownie points to 0
 		browniePoints = 0
-		compliesWithCPUCores(agentInfo, config, &browniePoints)
-		compliesWithMemory(agentInfo, config, &browniePoints)
+		compliesWithCPUCores(agentInfo.ServiceInfo, config, &browniePoints)
+		compliesWithMemory(agentInfo.ServiceInfo, config, &browniePoints)
 		pq[counter] = &model.YakoAgent{
 			ID:            agentID,
 			BrowniePoints: browniePoints,

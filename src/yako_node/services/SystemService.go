@@ -1,10 +1,16 @@
 package yako_node_service
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/golang/protobuf/ptypes/empty"
+	"io"
+	"log"
+	"math/rand"
+	"os"
 )
 
 // YakoNodeServer implements NodeServiceServer interface
@@ -117,4 +123,50 @@ func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty 
 	}
 
 	return info, nil
+}
+
+// DeployAppToAgent implements the Upload method of the YakoNodeServer
+// interface which is responsible for receiving a stream of
+// chunks that form a complete application to spin up.
+func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAgentServer) error {
+	appData := bytes.Buffer{}
+	// While there are app's chunks coming
+	for {
+		// Receive stream
+		req, err := stream.Recv()
+		if err != nil {
+			// Finish receiving application byte stream
+			if err == io.EOF {
+				break
+			}
+			return err
+		}
+
+		// Get byte data and compose app's binary file from the stream
+		chunk := req.GetContent()
+		appData.Write(chunk)
+	}
+
+	// Save the application
+	deployedApp, err := os.Create("/usr/yakoagent/" + string(rune(rand.Intn(100))))
+
+	if err != nil {
+		log.Println(fmt.Sprintf("Could not create application file: %s", err))
+	}
+
+	// Write the binary application to the file system
+	_, err = appData.WriteTo(deployedApp)
+	if err != nil {
+		log.Println(fmt.Sprintf("Could not write application file: %s", err))
+	}
+
+	// TODO: Spin up the application
+
+	// Transmission finished successfully with no errors
+	err = stream.SendAndClose(&yako.DeployStatus{
+		Message: "Successfully deployed",
+		Code:    yako.DeployStatusCode_Ok,
+	})
+
+	return err
 }

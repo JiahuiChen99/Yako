@@ -16,7 +16,7 @@ type ServiceInfo struct {
 // the client side
 type Response struct {
 	YakoMasters map[string]*ServiceInfo `json:"yako_masters"`
-	YakoAgents  map[string]*ServiceInfo `json:"yako_agents"`
+	YakoAgents  map[string]*Agent       `json:"yako_agents"`
 }
 
 // Agent struct is used in the Service Registry

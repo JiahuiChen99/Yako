@@ -115,7 +115,6 @@ func main() {
 		if err != nil {
 			log.Fatalln("Error while dialing the service" + newServiceSocket.ServiceInfo.Socket)
 		}
-		defer cc.Close()
 
 		c := yako.NewNodeServiceClient(cc)
 

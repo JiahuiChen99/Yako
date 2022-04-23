@@ -48,7 +48,9 @@ func UploadApp(c *gin.Context) {
 	// Check if automation is enabled
 	if autoDeploy := c.Query("autodeploy"); autoDeploy == "true" {
 		// Auto-deploy the app to the best computed node
-		// TODO: gRPC deploy
+		yakoAgentID := recommendedNodes[0].ID
+		deployStatus := deployApp(&zookeeper.ServicesRegistry[yakoAgentID].GrpcClient, appPath)
+		log.Println(deployStatus.Message)
 	}
 
 	// File uploaded and stored

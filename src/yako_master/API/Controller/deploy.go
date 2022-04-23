@@ -146,7 +146,7 @@ func deployApp(c *yako.NodeServiceClient, appPath string) *yako.DeployStatus {
 			Content: buf[:nBytes],
 		})
 		if err != nil {
-			log.Println("Error while deploying the application")
+			log.Println("Error while deploying the application ", err)
 		}
 	}
 

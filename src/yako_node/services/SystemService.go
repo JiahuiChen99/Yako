@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 )
 
 // YakoNodeServer implements NodeServiceServer interface
@@ -171,7 +172,14 @@ func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAg
 		log.Println(fmt.Sprintf("Could not write application file: %s", err))
 	}
 
-	// TODO: Spin up the application
+	// Spin up the application
+	cmd := exec.Command("usr/yakoagent" + appName)
+	err = cmd.Start()
+	if err != nil {
+		log.Println("Error: Could not start", err)
+	} else {
+		log.Println("Application up - PID: ", cmd.Process.Pid)
+	}
 
 	// Transmission finished successfully with no errors
 	err = stream.SendAndClose(&yako.DeployStatus{

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
 	"github.com/golang/protobuf/ptypes/empty"
 	"io"
 	"log"
@@ -146,6 +147,9 @@ func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAg
 		chunk := req.GetContent()
 		appData.Write(chunk)
 	}
+
+	// Check for YakoAgent working directory, create if it doesn't exist
+	directory_util.WorkDir("yakoagent")
 
 	// Save the application
 	deployedApp, err := os.Create("/usr/yakoagent/" + string(rune(rand.Intn(100))))

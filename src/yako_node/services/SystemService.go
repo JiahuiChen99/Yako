@@ -172,6 +172,12 @@ func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAg
 		log.Println(fmt.Sprintf("Could not write application file: %s", err))
 	}
 
+	err = deployedApp.Chmod(0710)
+	if err != nil {
+		log.Println("Could not change application permissions")
+		return err
+	}
+
 	// Spin up the application
 	cmd := exec.Command("/usr/yakoagent/" + appName)
 	err = cmd.Start()

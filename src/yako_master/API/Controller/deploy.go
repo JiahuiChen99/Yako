@@ -50,7 +50,7 @@ func UploadApp(c *gin.Context) {
 		// Auto-deploy the app to the best computed node
 		yakoAgentID := recommendedNodes[0].ID
 		log.Println("Autodeploying application to " + yakoAgentID)
-		deployStatus := deployApp(&zookeeper.ServicesRegistry[yakoAgentID].GrpcClient, appPath)
+		deployStatus := deployApp(&zookeeper.ServicesRegistry[yakoAgentID].GrpcClient, appPath, file.Filename)
 		log.Println(deployStatus.Message)
 	}
 
@@ -119,7 +119,7 @@ func compliesWithMemory(agent *model.ServiceInfo, config model.Config, browniePo
 
 // deployApp opens application binary file, splices it up into chunks of 1KB
 // and sends it through gRPC streaming service
-func deployApp(c *yako.NodeServiceClient, appPath string) *yako.DeployStatus {
+func deployApp(c *yako.NodeServiceClient, appPath string, appName string) *yako.DeployStatus {
 	file, err := os.Open(appPath)
 	if err != nil {
 		log.Println("Could not open the file")
@@ -130,6 +130,18 @@ func deployApp(c *yako.NodeServiceClient, appPath string) *yako.DeployStatus {
 
 	// 1KB buffer
 	buf := make([]byte, 1024)
+
+	// Send application meta-data
+	err = stream.Send(&yako.Chunk{
+		Data: &yako.Chunk_Info{
+			Info: &yako.AppInfo{
+				AppName: appName,
+			},
+		},
+	})
+	if err != nil {
+		log.Println("Error while sending application meta-data", err)
+	}
 
 	// Start transmission
 	transmitting := true

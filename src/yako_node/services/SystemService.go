@@ -178,6 +178,12 @@ func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAg
 		return err
 	}
 
+	// Close the application fd after writing & chmoding
+	err = deployedApp.Close()
+	if err != nil {
+		log.Println("Error while closing the application file descriptor")
+	}
+
 	// Spin up the application
 	cmd := exec.Command("/usr/yakoagent/" + appName)
 	err = cmd.Start()

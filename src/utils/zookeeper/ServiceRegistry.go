@@ -5,6 +5,7 @@ import (
 	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/go-zookeeper/zk"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -127,7 +128,8 @@ func WatchServices(watch <-chan zk.Event) {
 	case zk.EventNodeCreated:
 		log.Println("A znode has been created for the new service")
 	case zk.EventNodeDeleted:
-		delete(ServicesRegistry, event.Path)
+		// event.Path follows "/service_registry/<node_id>
+		delete(ServicesRegistry, strings.Split(event.Path, "/")[2])
 		fmt.Println("Service at " + event.Path + " znode, has been disconnected")
 	case zk.EventNodeChildrenChanged:
 		updateServices()

@@ -9,7 +9,10 @@ option go_package = "yako/";
 
 // Application Chunks
 message Chunk {
-  bytes Content = 1;
+  oneof data {
+    AppInfo info = 1;
+    bytes Content = 2;
+  }
 }
 
 // Application information meta-data

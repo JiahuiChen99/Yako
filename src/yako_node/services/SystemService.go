@@ -130,6 +130,13 @@ func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty 
 // interface which is responsible for receiving a stream of
 // chunks that form a complete application to spin up.
 func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAgentServer) error {
+	// Get application meta-data
+	meta, metaErr := stream.Recv()
+	if metaErr != nil {
+		return metaErr
+	}
+	appName := meta.GetInfo().GetAppName()
+
 	appData := bytes.Buffer{}
 	// While there are app's chunks coming
 	for {

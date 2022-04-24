@@ -143,7 +143,9 @@ func deployApp(c *yako.NodeServiceClient, appPath string) *yako.DeployStatus {
 		}
 
 		err = stream.Send(&yako.Chunk{
-			Content: buf[:nBytes],
+			Data: &yako.Chunk_Content{
+				Content: buf[:nBytes],
+			},
 		})
 		if err != nil {
 			log.Println("Error while deploying the application ", err)

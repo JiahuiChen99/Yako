@@ -139,6 +139,7 @@ func deployApp(c *yako.NodeServiceClient, appPath string, appName string) *yako.
 			},
 		},
 	})
+	log.Println("Sending application meta-data", appName)
 	if err != nil {
 		log.Println("Error while sending application meta-data", err)
 	}

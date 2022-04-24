@@ -12,6 +12,11 @@ message Chunk {
   bytes Content = 1;
 }
 
+// Application information meta-data
+message AppInfo {
+  string AppName = 1;
+}
+
 // Status code enums
 enum DeployStatusCode {
   Unknown = 0;

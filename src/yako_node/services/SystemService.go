@@ -10,7 +10,6 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"io"
 	"log"
-	"math/rand"
 	"os"
 )
 
@@ -159,7 +158,7 @@ func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAg
 	directory_util.WorkDir("yakoagent")
 
 	// Save the application
-	deployedApp, err := os.Create("/usr/yakoagent/" + string(rune(rand.Intn(100))))
+	deployedApp, err := os.Create("/usr/yakoagent/" + appName)
 
 	if err != nil {
 		log.Println(fmt.Sprintf("Could not create application file: %s", err))

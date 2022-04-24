@@ -7,6 +7,7 @@ import "cpu.proto";
 import "gpu.proto";
 import "memory.proto";
 import "sysinfo.proto";
+import "deploy.proto";
 
 // Go related package
 option go_package = "yako/";
@@ -22,4 +23,6 @@ service NodeService {
   rpc GetSystemGpuInformation(google.protobuf.Empty) returns (yako.GpuList);
   // Retrieves system main memory related information
   rpc GetSystemMemoryInformation(google.protobuf.Empty) returns (yako.Memory);
+  // Transfer & deploy application to the YakoAgent
+  rpc DeployAppToAgent(stream Chunk) returns (yako.DeployStatus);
 }

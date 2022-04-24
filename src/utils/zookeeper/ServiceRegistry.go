@@ -13,9 +13,9 @@ const (
 )
 
 var (
-	Zookeeper        *zk.Conn                      // Zookeeper instance
-	NewServiceChan   chan string                   // Handle Service Channel
-	ServicesRegistry map[string]*model.ServiceInfo // Service list
+	Zookeeper        *zk.Conn                // Zookeeper instance
+	NewServiceChan   chan string             // Handle Service Channel
+	ServicesRegistry map[string]*model.Agent // Service list
 )
 
 // NewZookeeper will create a new singleton of Zookeeper client
@@ -28,7 +28,7 @@ func NewZookeeper(zkIp string, zkPort string) {
 	}
 
 	Zookeeper = zookeeper
-	ServicesRegistry = make(map[string]*model.ServiceInfo)
+	ServicesRegistry = make(map[string]*model.Agent)
 	MasterRegistry = make(map[string]*model.ServiceInfo)
 }
 
@@ -95,8 +95,10 @@ func GetAllServiceAddresses() {
 		socketPath := string(socket[:])
 		if ServicesRegistry[service] == nil {
 			// Store socket path in the registry
-			ServicesRegistry[service] = &model.ServiceInfo{
-				Socket: socketPath,
+			ServicesRegistry[service] = &model.Agent{
+				ServiceInfo: &model.ServiceInfo{
+					Socket: socketPath,
+				},
 			}
 			// A new service has connected
 			NewServiceChan <- service

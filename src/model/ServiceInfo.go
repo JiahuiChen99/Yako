@@ -1,5 +1,7 @@
 package model
 
+import "github.com/JiahuiChen99/Yako/src/grpc/yako"
+
 // ServiceInfo struct that represents the data transferred back to
 // the client side
 type ServiceInfo struct {
@@ -14,5 +16,11 @@ type ServiceInfo struct {
 // the client side
 type Response struct {
 	YakoMasters map[string]*ServiceInfo `json:"yako_masters"`
-	YakoAgents  map[string]*ServiceInfo `json:"yako_agents"`
+	YakoAgents  map[string]*Agent       `json:"yako_agents"`
+}
+
+// Agent struct is used in the Service Registry
+type Agent struct {
+	ServiceInfo *ServiceInfo           `json:"info"`
+	GrpcClient  yako.NodeServiceClient `json:"-"`
 }

@@ -1,10 +1,17 @@
 package yako_node_service
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
 	"github.com/golang/protobuf/ptypes/empty"
+	"io"
+	"log"
+	"os"
+	"os/exec"
 )
 
 // YakoNodeServer implements NodeServiceServer interface
@@ -117,4 +124,80 @@ func (ns *YakoNodeServer) GetSystemMemoryInformation(ctx context.Context, empty 
 	}
 
 	return info, nil
+}
+
+// DeployAppToAgent implements the Upload method of the YakoNodeServer
+// interface which is responsible for receiving a stream of
+// chunks that form a complete application to spin up.
+func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAgentServer) error {
+	// Get application meta-data
+	meta, metaErr := stream.Recv()
+	if metaErr != nil {
+		return metaErr
+	}
+	appName := meta.GetInfo().GetAppName()
+	log.Println("Received application meta-data", appName)
+
+	appData := bytes.Buffer{}
+	// While there are app's chunks coming
+	for {
+		// Receive stream
+		req, err := stream.Recv()
+		if err != nil {
+			// Finish receiving application byte stream
+			if err == io.EOF {
+				break
+			}
+			return err
+		}
+
+		// Get byte data and compose app's binary file from the stream
+		chunk := req.GetContent()
+		appData.Write(chunk)
+	}
+
+	// Check for YakoAgent working directory, create if it doesn't exist
+	directory_util.WorkDir("yakoagent")
+
+	// Save the application
+	deployedApp, err := os.Create("/usr/yakoagent/" + appName)
+
+	if err != nil {
+		log.Println(fmt.Sprintf("Could not create application file: %s", err))
+	}
+
+	// Write the binary application to the file system
+	_, err = appData.WriteTo(deployedApp)
+	if err != nil {
+		log.Println(fmt.Sprintf("Could not write application file: %s", err))
+	}
+
+	err = deployedApp.Chmod(0710)
+	if err != nil {
+		log.Println("Could not change application permissions")
+		return err
+	}
+
+	// Close the application fd after writing & chmoding
+	err = deployedApp.Close()
+	if err != nil {
+		log.Println("Error while closing the application file descriptor")
+	}
+
+	// Spin up the application
+	cmd := exec.Command("/usr/yakoagent/" + appName)
+	err = cmd.Start()
+	if err != nil {
+		log.Println("Error: Could not start", err)
+	} else {
+		log.Println("Application up - PID: ", cmd.Process.Pid)
+	}
+
+	// Transmission finished successfully with no errors
+	err = stream.SendAndClose(&yako.DeployStatus{
+		Message: "Successfully deployed",
+		Code:    yako.DeployStatusCode_Ok,
+	})
+
+	return err
 }

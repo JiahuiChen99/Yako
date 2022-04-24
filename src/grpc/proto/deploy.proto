@@ -1,0 +1,34 @@
+//deploy.proto
+syntax = "proto3";
+
+// gRPC package
+package yako;
+
+// Go related package
+option go_package = "yako/";
+
+// Application Chunks
+message Chunk {
+  oneof data {
+    AppInfo info = 1;
+    bytes Content = 2;
+  }
+}
+
+// Application information meta-data
+message AppInfo {
+  string AppName = 1;
+}
+
+// Status code enums
+enum DeployStatusCode {
+  Unknown = 0;
+  Ok = 1;
+  Failed = 2;
+}
+
+// App deployment status
+message DeployStatus {
+  string Message = 1;
+  DeployStatusCode Code = 2;
+}

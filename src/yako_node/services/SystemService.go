@@ -135,6 +135,7 @@ func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAg
 		return metaErr
 	}
 	appName := meta.GetInfo().GetAppName()
+	log.Println("Received application meta-data", appName)
 
 	appData := bytes.Buffer{}
 	// While there are app's chunks coming

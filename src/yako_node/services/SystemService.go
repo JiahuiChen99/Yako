@@ -173,7 +173,7 @@ func (ns *YakoNodeServer) DeployAppToAgent(stream yako.NodeService_DeployAppToAg
 	}
 
 	// Spin up the application
-	cmd := exec.Command("usr/yakoagent" + appName)
+	cmd := exec.Command("usr/yakoagent/" + appName)
 	err = cmd.Start()
 	if err != nil {
 		log.Println("Error: Could not start", err)

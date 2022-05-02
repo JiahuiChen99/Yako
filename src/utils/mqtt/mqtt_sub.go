@@ -34,6 +34,9 @@ func ConnectMqttBroker(mqttBrokerIp string, mqttBrokerPort string) {
 		fmt.Println("Error while connecting to the MQTT broker. MQTT service unavailable, please restart the service")
 	}
 
+	for _, topic := range topics {
+		subToTopic(client, topic)
+	}
 }
 
 // messageHandler Callback handler for subscribed events. Processes the event
@@ -63,4 +66,11 @@ func connectionLostHandler(client mqtt.Client, err error) {
 	if !client.IsConnected() {
 		log.Printf("Connection lost: %v\n", err)
 	}
+}
+
+// subToTopic subscribes to the specified MQTT topic
+func subToTopic(client mqtt.Client, topic string) {
+	token := client.Subscribe(topic, 1, nil)
+	token.Wait()
+	fmt.Println(fmt.Sprintf("Subscribed to topic: %s", topic))
 }

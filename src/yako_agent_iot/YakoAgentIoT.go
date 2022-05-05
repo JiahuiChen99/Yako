@@ -63,25 +63,25 @@ func timedReport(client mqtt.Client) {
 				if err != nil {
 					log.Println("Error retrieving system's CPU data")
 				}
-				topic = fmt.Sprintf("/topic/%s/%s", AgentSocket, CPU)
+				topic = fmt.Sprintf("topic/%s/%s", AgentSocket, CPU)
 			case GPU:
 				data, err = model.Gpu{}.GetResources()
 				if err != nil {
 					log.Println("Error retrieving system's GPU data")
 				}
-				topic = fmt.Sprintf("/topic/%s/%s", AgentSocket, GPU)
+				topic = fmt.Sprintf("topic/%s/%s", AgentSocket, GPU)
 			case Memory:
 				data, err = model.Memory{}.GetResources()
 				if err != nil {
 					log.Println("Error retrieving system's memory data")
 				}
-				topic = fmt.Sprintf("/topic/%s/%s", AgentSocket, Memory)
+				topic = fmt.Sprintf("topic/%s/%s", AgentSocket, Memory)
 			case SysInfo:
 				data, err = model.SysInfo{}.GetResources()
 				if err != nil {
 					log.Println("Error retrieving system's information data")
 				}
-				topic = fmt.Sprintf("/topic/%s/%s", AgentSocket, SysInfo)
+				topic = fmt.Sprintf("topic/%s/%s", AgentSocket, SysInfo)
 			}
 			// Publish the data
 			pubTopic(client, topic, data)

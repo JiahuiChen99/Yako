@@ -1,9 +1,12 @@
 package mqtt
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/JiahuiChen99/Yako/src/model"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"log"
+	"strings"
 )
 
 const (
@@ -46,15 +49,30 @@ func ConnectMqttBroker(mqttBrokerIp string, mqttBrokerPort string) {
 // messageHandler Callback handler for subscribed events. Processes the event
 // according to the message topic
 func messageHandler(client mqtt.Client, msg mqtt.Message) {
-	switch msg.Topic() {
-	case TopicCpu:
-		fmt.Println("CPU topic")
-	case TopicGpu:
-		fmt.Println("GPU topic")
-	case TopicMemory:
-		fmt.Println("Memory topic")
-	case TopicSysInfo:
-		fmt.Println("Sysinfo topic")
+	// Topic parsing topic/<agent_socket>/<topic_name>
+	mqttTopic := strings.Split(msg.Topic(), "/")
+	switch mqttTopic[2] {
+	case CPU:
+		var cpu []model.Cpu
+		if err := json.Unmarshal(msg.Payload(), &cpu); err != nil {
+			log.Println("Err", err)
+		}
+	case GPU:
+		var gpu []model.Gpu
+		if err := json.Unmarshal(msg.Payload(), &gpu); err != nil {
+			log.Println("Err", err)
+		}
+	case Memory:
+		var memory model.Memory
+		if err := json.Unmarshal(msg.Payload(), &memory); err != nil {
+			log.Println("Err", err)
+		}
+	case SysInfo:
+		//fmt.Println(fmt.Sprintf("%v", msg.Payload()))
+		var sysyinfo model.SysInfo
+		if err := json.Unmarshal(msg.Payload(), &sysyinfo); err != nil {
+			log.Println("Err", err)
+		}
 	}
 }
 

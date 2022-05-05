@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"os"
 )
 
@@ -29,4 +30,13 @@ func main() {
 	brokerPort := os.Args[4]
 	BrokerSocket = fmt.Sprintf("%s:%s", brokerIp, brokerPort)
 
+	// MQTT broker configuration
+	opts := mqtt.NewClientOptions()
+	opts.AddBroker(BrokerSocket)
+	client := mqtt.NewClient(opts)
+
+	// Connect to the broker
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		fmt.Println("Error while connecting to the MQTT broker.")
+	}
 }

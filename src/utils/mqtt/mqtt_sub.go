@@ -7,10 +7,14 @@ import (
 )
 
 const (
-	TopicCpu     = "topic/cpu"
-	TopicGpu     = "topic/gpu"
-	TopicMemory  = "topic/memory"
-	TopicSysInfo = "topic/sysinfo"
+	CPU          = "cpu"
+	GPU          = "gpu"
+	Memory       = "memory"
+	SysInfo      = "sysinfo"
+	TopicCpu     = "topic/+/" + CPU
+	TopicGpu     = "topic/+/" + GPU
+	TopicMemory  = "topic/+/" + Memory
+	TopicSysInfo = "topic/+/" + SysInfo
 )
 
 var (

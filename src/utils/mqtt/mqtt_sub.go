@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/zookeeper"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"strings"
@@ -96,4 +97,40 @@ func subToTopic(client mqtt.Client, topic string) {
 	token := client.Subscribe(topic, 1, nil)
 	token.Wait()
 	fmt.Println(fmt.Sprintf("Subscribed to topic: %s", topic))
+}
+
+// updateRegistry creates a new entry in the service registry if it did not exist previously
+// otherwise it updates the existing information
+func updateRegistry(agentSocket string, data interface{}) {
+	// Add a new entry if it doesn't exist in the registry
+	if zookeeper.ServicesRegistry[agentSocket] == nil {
+		var info model.ServiceInfo
+		switch data.(type) {
+		case []model.Cpu:
+			info.CpuList = data.([]model.Cpu)
+		case []model.Gpu:
+			info.GpuList = data.([]model.Gpu)
+		case model.Memory:
+			info.Memory = data.(model.Memory)
+		case model.SysInfo:
+			info.SysInfo = data.(model.SysInfo)
+		}
+		// Save the information
+		zookeeper.ServicesRegistry[agentSocket] = &model.Agent{
+			ServiceInfo: &info,
+		}
+	} else {
+		// Update the service information
+		agent := zookeeper.ServicesRegistry[agentSocket]
+		switch data.(type) {
+		case []model.Cpu:
+			agent.ServiceInfo.CpuList = data.([]model.Cpu)
+		case []model.Gpu:
+			agent.ServiceInfo.GpuList = data.([]model.Gpu)
+		case model.Memory:
+			agent.ServiceInfo.Memory = data.(model.Memory)
+		case model.SysInfo:
+			agent.ServiceInfo.SysInfo = data.(model.SysInfo)
+		}
+	}
 }

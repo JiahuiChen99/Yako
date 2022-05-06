@@ -1,21 +1,31 @@
 package mqtt
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/zookeeper"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"log"
+	"strings"
 )
 
 const (
-	TopicCpu     = "topic/cpu"
-	TopicGpu     = "topic/gpu"
-	TopicMemory  = "topic/memory"
-	TopicSysInfo = "topic/sysinfo"
+	CPU          = "cpu"
+	GPU          = "gpu"
+	Memory       = "memory"
+	SysInfo      = "sysinfo"
+	TopicCpu     = "topic/+/" + CPU
+	TopicGpu     = "topic/+/" + GPU
+	TopicMemory  = "topic/+/" + Memory
+	TopicSysInfo = "topic/+/" + SysInfo
 )
 
 var (
 	topics = []string{TopicCpu, TopicGpu, TopicMemory, TopicSysInfo}
 )
+
+// TODO: IoT YakoAgent publisher disconnection handling
 
 // ConnectMqttBroker connects to an MQTT Broker and returns the connection
 // YakoMaster to listen for subscribed channels
@@ -42,15 +52,34 @@ func ConnectMqttBroker(mqttBrokerIp string, mqttBrokerPort string) {
 // messageHandler Callback handler for subscribed events. Processes the event
 // according to the message topic
 func messageHandler(client mqtt.Client, msg mqtt.Message) {
-	switch msg.Topic() {
-	case TopicCpu:
-		fmt.Println("CPU topic")
-	case TopicGpu:
-		fmt.Println("GPU topic")
-	case TopicMemory:
-		fmt.Println("Memory topic")
-	case TopicSysInfo:
-		fmt.Println("Sysinfo topic")
+	// Topic parsing topic/<agent_socket>/<topic_name>
+	mqttTopic := strings.Split(msg.Topic(), "/")
+	agentSocket := mqttTopic[1]
+	switch mqttTopic[2] {
+	case CPU:
+		var cpu []model.Cpu
+		if err := json.Unmarshal(msg.Payload(), &cpu); err != nil {
+			log.Println("Err", err)
+		}
+		updateRegistry(agentSocket, cpu)
+	case GPU:
+		var gpu []model.Gpu
+		if err := json.Unmarshal(msg.Payload(), &gpu); err != nil {
+			log.Println("Err", err)
+		}
+		updateRegistry(agentSocket, gpu)
+	case Memory:
+		var memory model.Memory
+		if err := json.Unmarshal(msg.Payload(), &memory); err != nil {
+			log.Println("Err", err)
+		}
+		updateRegistry(agentSocket, memory)
+	case SysInfo:
+		var sysinfo model.SysInfo
+		if err := json.Unmarshal(msg.Payload(), &sysinfo); err != nil {
+			log.Println("Err", err)
+		}
+		updateRegistry(agentSocket, sysinfo)
 	}
 }
 
@@ -73,4 +102,40 @@ func subToTopic(client mqtt.Client, topic string) {
 	token := client.Subscribe(topic, 1, nil)
 	token.Wait()
 	fmt.Println(fmt.Sprintf("Subscribed to topic: %s", topic))
+}
+
+// updateRegistry creates a new entry in the service registry if it did not exist previously
+// otherwise it updates the existing information
+func updateRegistry(agentSocket string, data interface{}) {
+	// Add a new entry if it doesn't exist in the registry
+	if zookeeper.ServicesRegistry[agentSocket] == nil {
+		var info model.ServiceInfo
+		switch data.(type) {
+		case []model.Cpu:
+			info.CpuList = data.([]model.Cpu)
+		case []model.Gpu:
+			info.GpuList = data.([]model.Gpu)
+		case model.Memory:
+			info.Memory = data.(model.Memory)
+		case model.SysInfo:
+			info.SysInfo = data.(model.SysInfo)
+		}
+		// Save the information
+		zookeeper.ServicesRegistry[agentSocket] = &model.Agent{
+			ServiceInfo: &info,
+		}
+	} else {
+		// Update the service information
+		agent := zookeeper.ServicesRegistry[agentSocket]
+		switch data.(type) {
+		case []model.Cpu:
+			agent.ServiceInfo.CpuList = data.([]model.Cpu)
+		case []model.Gpu:
+			agent.ServiceInfo.GpuList = data.([]model.Gpu)
+		case model.Memory:
+			agent.ServiceInfo.Memory = data.(model.Memory)
+		case model.SysInfo:
+			agent.ServiceInfo.SysInfo = data.(model.SysInfo)
+		}
+	}
 }

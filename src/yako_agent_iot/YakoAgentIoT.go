@@ -73,16 +73,19 @@ func serve() {
 	var appFrame []byte
 	reader := bufio.NewReader(conn)
 	for {
-		log.Println("Deploy application start...")
-		// Start application tranmission
-		_, err := reader.Read(appFrame)
-		if err != nil && err != io.EOF {
-			log.Println("Frame dropped while transferring the application ", err)
-		}
-		app = append(app, appFrame...)
-		if err == io.EOF {
-			// Store the application and spin it up
-			log.Println("Spinning the application up")
+		log.Println("Waiting for application deployment")
+		for {
+			// Start application tranmission
+			_, err := reader.Read(appFrame)
+			if err != nil && err != io.EOF {
+				log.Println("Frame dropped while transferring the application ", err)
+			}
+			app = append(app, appFrame...)
+			if err == io.EOF {
+				// Store the application and spin it up
+				log.Println("Spinning the application up")
+				break
+			}
 		}
 	}
 }

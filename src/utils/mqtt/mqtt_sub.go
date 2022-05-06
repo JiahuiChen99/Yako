@@ -59,22 +59,25 @@ func messageHandler(client mqtt.Client, msg mqtt.Message) {
 		if err := json.Unmarshal(msg.Payload(), &cpu); err != nil {
 			log.Println("Err", err)
 		}
+		updateRegistry(agentSocket, cpu)
 	case GPU:
 		var gpu []model.Gpu
 		if err := json.Unmarshal(msg.Payload(), &gpu); err != nil {
 			log.Println("Err", err)
 		}
+		updateRegistry(agentSocket, gpu)
 	case Memory:
 		var memory model.Memory
 		if err := json.Unmarshal(msg.Payload(), &memory); err != nil {
 			log.Println("Err", err)
 		}
+		updateRegistry(agentSocket, memory)
 	case SysInfo:
-		//fmt.Println(fmt.Sprintf("%v", msg.Payload()))
-		var sysyinfo model.SysInfo
-		if err := json.Unmarshal(msg.Payload(), &sysyinfo); err != nil {
+		var sysinfo model.SysInfo
+		if err := json.Unmarshal(msg.Payload(), &sysinfo); err != nil {
 			log.Println("Err", err)
 		}
+		updateRegistry(agentSocket, sysinfo)
 	}
 }
 

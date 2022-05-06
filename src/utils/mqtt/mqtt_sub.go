@@ -51,6 +51,7 @@ func ConnectMqttBroker(mqttBrokerIp string, mqttBrokerPort string) {
 func messageHandler(client mqtt.Client, msg mqtt.Message) {
 	// Topic parsing topic/<agent_socket>/<topic_name>
 	mqttTopic := strings.Split(msg.Topic(), "/")
+	agentSocket := mqttTopic[1]
 	switch mqttTopic[2] {
 	case CPU:
 		var cpu []model.Cpu

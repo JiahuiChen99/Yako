@@ -25,6 +25,8 @@ var (
 	topics = []string{TopicCpu, TopicGpu, TopicMemory, TopicSysInfo}
 )
 
+// TODO: IoT YakoAgent publisher disconnection handling
+
 // ConnectMqttBroker connects to an MQTT Broker and returns the connection
 // YakoMaster to listen for subscribed channels
 func ConnectMqttBroker(mqttBrokerIp string, mqttBrokerPort string) {

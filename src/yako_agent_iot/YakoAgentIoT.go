@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"github.com/JiahuiChen99/Yako/src/model"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"io"
 	"log"
+	"net"
 	"os"
 	"time"
 )
@@ -47,6 +50,41 @@ func main() {
 	// Regular reports to the MQTT broker
 	go timedReport(client)
 
+	// IoT YakoAgent Server listens for application deployment
+	serve()
+}
+
+// serve starts a socket in listening mode and awaits for new deployment
+// connections.
+func serve() {
+	ln, err := net.Listen("tcp", AgentSocket)
+	if err != nil {
+		log.Fatalln("Could not create IoT YakoAgent Server ", err)
+	}
+	conn, err := ln.Accept()
+	if err != nil {
+		log.Fatalln("Await for connections error", err)
+	}
+	// TODO: Close listener on SIGINT
+	defer ln.Close()
+
+	// Wait for connections and process application deployment
+	var app []byte
+	var appFrame []byte
+	reader := bufio.NewReader(conn)
+	for {
+		log.Println("Deploy application start...")
+		// Start application tranmission
+		_, err := reader.Read(appFrame)
+		if err != nil && err != io.EOF {
+			log.Println("Frame dropped while transferring the application ", err)
+		}
+		app = append(app, appFrame...)
+		if err == io.EOF {
+			// Store the application and spin it up
+			log.Println("Spinning the application up")
+		}
+	}
 }
 
 // timedReport schedules a timed system resources information report to the MQTT broker

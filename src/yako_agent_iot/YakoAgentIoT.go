@@ -45,7 +45,8 @@ func main() {
 	}
 
 	// Regular reports to the MQTT broker
-	timedReport(client)
+	go timedReport(client)
+
 }
 
 // timedReport schedules a timed system resources information report to the MQTT broker

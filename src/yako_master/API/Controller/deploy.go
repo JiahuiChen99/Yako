@@ -42,6 +42,13 @@ func UploadApp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 
+	var iot bool
+	if c.Query("iot") == "true" {
+		iot = true
+	} else {
+		iot = false
+	}
+
 	// Compute and find the best nodes to deploy the app
 	recommendedNodes := findYakoAgents(config)
 

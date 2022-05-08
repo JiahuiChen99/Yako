@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 )
@@ -57,8 +58,14 @@ func UploadApp(c *gin.Context) {
 		// Auto-deploy the app to the best computed node
 		yakoAgentID := recommendedNodes[0].ID
 		log.Println("Autodeploying application to " + yakoAgentID)
-		deployStatus := deployApp(&zookeeper.ServicesRegistry[yakoAgentID].GrpcClient, appPath, file.Filename)
-		log.Println(deployStatus.Message)
+		if !iot {
+			// Deploy to a non-IoT agent
+			deployStatus := deployApp(&zookeeper.ServicesRegistry[yakoAgentID].GrpcClient, appPath, file.Filename)
+			log.Println(deployStatus.Message)
+		} else {
+			// Deploy to the best IoT agent
+			deployAppIoT(yakoAgentID, appPath, file.Filename)
+		}
 	}
 
 	// File uploaded and stored
@@ -176,4 +183,38 @@ func deployApp(c *yako.NodeServiceClient, appPath string, appName string) *yako.
 	deployStatus, err = stream.CloseAndRecv()
 
 	return deployStatus
+}
+
+// deployAppIoT opens application binary file, splices it up into chunks of 1KB
+// and sends it to the IoT YakoAgent
+func deployAppIoT(agentSocket string, appPath string, appName string) {
+	file, err := os.Open(appPath)
+	if err != nil {
+		log.Println("Could not open the file")
+	}
+
+	conn, err := net.Dial("tcp", agentSocket)
+	if err != nil {
+		log.Println("Could not dial the agent ", err)
+	}
+
+	// 1KB buffer
+	buf := make([]byte, 1024)
+	for {
+		nBytesRead, err := file.Read(buf)
+		// End of File
+		if err == io.EOF {
+			conn.Close()
+			break
+		}
+
+		nBytesSent, err := conn.Write(buf[:nBytesRead])
+		if err != nil {
+			log.Println("Error while deploying the application ", err)
+		}
+
+		if nBytesRead != nBytesSent {
+			log.Println("Some bytes went missing during the application transmission")
+		}
+	}
 }

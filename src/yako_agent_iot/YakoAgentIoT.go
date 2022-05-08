@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/JiahuiChen99/Yako/src/model"
+	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"io"
 	"log"
@@ -69,24 +71,43 @@ func serve() {
 	defer ln.Close()
 
 	// Wait for connections and process application deployment
-	var app []byte
-	var appFrame []byte
+	appFrame := make([]byte, 1024)
+	appData := bytes.Buffer{}
 	reader := bufio.NewReader(conn)
 	for {
-		log.Println("Waiting for application deployment")
-		for {
-			// Start application tranmission
-			_, err := reader.Read(appFrame)
-			if err != nil && err != io.EOF {
-				log.Println("Frame dropped while transferring the application ", err)
+		// Start application transmission
+		nBytesRead, err := reader.Read(appFrame)
+		if err != nil && err != io.EOF {
+			log.Println("Frame dropped while transferring the application ", err)
+		}
+		if err == io.EOF {
+			// Store the application and spin it up
+			log.Println("Spinning the application up")
+			directory_util.WorkDir("yakoagentiot")
+			deployedApp, err := os.Create("/usr/yakoagentiot/" + "arxiu")
+
+			if err != nil {
+				log.Println(fmt.Sprintf("Could not create application file: %s", err))
 			}
-			app = append(app, appFrame...)
-			if err == io.EOF {
-				// Store the application and spin it up
-				log.Println("Spinning the application up")
-				break
+
+			// Write the binary application to the file system
+			_, err = appData.WriteTo(deployedApp)
+			if err != nil {
+				log.Println(fmt.Sprintf("Could not write application file: %s", err))
+			}
+
+			err = deployedApp.Chmod(0710)
+			if err != nil {
+				log.Println("Could not change application permissions")
+			}
+
+			// Close the application file descriptor after writing & chmoding
+			err = deployedApp.Close()
+			if err != nil {
+				log.Println("Error while closing the application file descriptor")
 			}
 		}
+		appData.Write(appFrame[:nBytesRead])
 	}
 }
 

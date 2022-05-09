@@ -12,6 +12,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -75,6 +76,7 @@ func serve() {
 	appData := bytes.Buffer{}
 	reader := bufio.NewReader(conn)
 	for {
+		// TODO: Application name
 		// Start application transmission
 		nBytesRead, err := reader.Read(appFrame)
 		if err != nil && err != io.EOF {
@@ -105,6 +107,15 @@ func serve() {
 			err = deployedApp.Close()
 			if err != nil {
 				log.Println("Error while closing the application file descriptor")
+			}
+
+			// Spin up the application
+			cmd := exec.Command("/usr/yakoagentiot/" + appName)
+			err = cmd.Start()
+			if err != nil {
+				log.Println("Error: Could not start", err)
+			} else {
+				log.Println("Application up - PID: ", cmd.Process.Pid)
 			}
 		}
 		appData.Write(appFrame[:nBytesRead])

@@ -8,3 +8,12 @@ schemes:
   - https
   - http
 paths:
+  /alive:
+    get:
+      operationId: alive
+      description: Checks YakoMaster availability
+      responses:
+        '200':
+          description: YakoMaster is alive
+        default:
+          description: YakoMaster is down

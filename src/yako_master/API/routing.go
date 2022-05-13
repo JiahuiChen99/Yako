@@ -19,11 +19,11 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/cluster/apps", Controller.GetClusterApps)
 
 	opts := middleware.RedocOpts{
-		SpecURL: "./swagger.yml",
+		SpecURL: "./src/yako_master/API/swagger.yaml",
 		Title:   "YakoAPI",
 	}
 
 	swg := middleware.Redoc(opts, nil)
 	router.GET("/docs", gin.WrapH(swg))
-	router.GET("/swagger.yml", gin.WrapH(http.FileServer(http.Dir("./"))))
+	router.GET("./src/yako_master/API/swagger.yaml", gin.WrapH(http.FileServer(http.Dir("./"))))
 }

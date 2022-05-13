@@ -1,0 +1,10 @@
+swagger: "2.0"
+info:
+  title: YakoAPI
+  description: An API to interact with YakoMaster
+  version: 1.0.0
+host: www
+schemes:
+  - https
+  - http
+paths:

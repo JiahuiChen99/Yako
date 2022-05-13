@@ -7,6 +7,18 @@ host: www
 schemes:
   - https
   - http
+produces:
+  - application/json
+
+definitions:
+  YakoAgent:
+    type: object
+    properties:
+      ID:
+        type: string
+      BrowniePoints:
+        type: number
+        format: int64
 paths:
   /alive:
     get:
@@ -17,3 +29,16 @@ paths:
           description: YakoMaster is alive
         default:
           description: YakoMaster is down
+  /deploy:
+    post:
+      operationId: deploy
+      description: Uploads the application, finds the most suitable node according to the specsheet and deploys in
+      responses:
+        '200':
+          description: Returns top 3 best nodes with its brownie points.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/YakoAgent'
+        '400':
+          description: Bad request, some requests params mighht be missing

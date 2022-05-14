@@ -17,6 +17,22 @@ tags:
     x-displayName: The CPU Model
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/CPU" />
+  - name: gpu_model
+    x-displayName: The GPU Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/GPU" />
+  - name: sysinfo_model
+    x-displayName: The System Information Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SysInfo" />
+  - name: memory_model
+    x-displayName: The Memory Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Memory" />
+  - name: response_model
+    x-displayName: The Response Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Response" />
 x-tagGroups:
   - name: General
     tags:

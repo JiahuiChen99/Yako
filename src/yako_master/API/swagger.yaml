@@ -1,24 +1,32 @@
 openapi: 3.0.0
 info:
   title: YakoAPI
-  description: An API to interact with YakoMaster
+  description: An API to interact with YakoMaster and the Yako platform
   version: 1.0.0
-host: www
-schemes:
-  - https
-  - http
-produces:
-  - application/json
-
-definitions:
-  YakoAgent:
-    type: object
-    properties:
-      ID:
-        type: string
-      BrowniePoints:
-        type: number
-        format: int64
+  contact:
+    name: Jiahui Chen
+    email: Jiahui1@hotmail.es
+    url: https://github.com/JiahuiChen99/Yako
+externalDocs:
+  description: Find out how to run the Yako plaftorm
+  url: 'https://github.com/JiahuiChen99/Yako#yako'
+tags:
+  - name: YakoMaster
+    description: All resources to interact with YakoMaster
+  - name: cpu_model
+    x-displayName: The CPU Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/CPU" />
+x-tagGroups:
+  - name: General
+    tags:
+      - YakoMaster
+  - name: Models
+    tags:
+      - cpu_model
+      - gpu_model
+      - sysinfo_model
+      - memory_model
 paths:
   /alive:
     get:

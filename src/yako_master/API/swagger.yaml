@@ -78,6 +78,12 @@ paths:
             type: boolean
           in: query
           required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+              format: binary
       responses:
         '200':
           description: Returns top 3 best nodes with its brownie points.

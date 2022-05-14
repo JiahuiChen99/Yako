@@ -43,6 +43,7 @@ x-tagGroups:
       - gpu_model
       - sysinfo_model
       - memory_model
+      - response_model
 paths:
   /alive:
     get:

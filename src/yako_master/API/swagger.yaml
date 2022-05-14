@@ -65,9 +65,11 @@ paths:
       responses:
         '200':
           description: Returns top 3 best nodes with its brownie points.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/YakoAgent'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/YakoAgent'
         '400':
           description: Bad request, some requests params mighht be missing

@@ -84,3 +84,107 @@ paths:
             application/json:
               schema:
                   $ref: '#/components/Response'
+components:
+  schemas:
+    YakoAgent:
+      type: object
+      properties:
+        id:
+          type: string
+        brownie_points:
+          type: number
+          format: int64
+    ServiceInfo:
+      type: object
+      properties:
+        socket:
+          type: string
+        sys_info:
+          $ref: '#/components/schemas/SysInfo'
+        cpu_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/CPU'
+        gpu_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/GPU'
+        memory:
+          $ref: '#/components/schemas/Memory'
+    CPU:
+      type: object
+      properties:
+        cpuName:
+          type: string
+        cpuCores:
+          type: integer
+          format: int64
+        socket:
+          type: integer
+          format: int64
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Core'
+    Core:
+      type: object
+      properties:
+        processor:
+          type: integer
+          format: int64
+        coreID:
+          type: integer
+          format: int64
+    GPU:
+      type: object
+      properties:
+        gpuName:
+          type: string
+        gpuID:
+          type: string
+        busID:
+          type: string
+        IRQ:
+          type: integer
+          format: int64
+        major:
+          type: integer
+          format: int64
+        minor:
+          type: integer
+          format: int64
+    SysInfo:
+      type: object
+      properties:
+        sys_name:
+          type: string
+        node_nme:
+          type: string
+        release:
+          type: string
+        version:
+          type: string
+        machine:
+          type: string
+    Memory:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        free:
+          type: integer
+          format: int64
+        swap:
+          type: integer
+          format: int64
+        freeSwap:
+          type: integer
+          format: int64
+    Response:
+      type: object
+      properties:
+        yako_masters:
+          $ref: '#/components/schemas/ServiceInfo'
+        yako_agents:
+          $ref: '#/components/schemas/ServiceInfo'

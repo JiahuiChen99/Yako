@@ -67,6 +67,17 @@ paths:
         - YakoMaster
       operationId: deploy
       description: Uploads the application, finds the most suitable node according to the specsheet and deploys in
+      parameters:
+        - name: autodeploy
+          schema:
+            type: boolean
+          in: query
+          required: true
+        - name: iot
+          schema:
+            type: boolean
+          in: query
+          required: true
       responses:
         '200':
           description: Returns top 3 best nodes with its brownie points.

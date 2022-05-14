@@ -90,6 +90,8 @@ paths:
                 $ref: '#/components/schemas/RestError'
   /cluster:
     get:
+      tags:
+        - YakoMaster
       operationId: cluster
       description: Get cluster information
       responses:
@@ -98,7 +100,22 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/Response'
+                  $ref: '#/components/schemas/Response'
+  /cluster/apps:
+    get:
+      tags:
+        - YakoMaster
+      operationId: clusterApps
+      description: Get applications list that have been uploaded to the system
+      responses:
+        '200':
+          description: Returns a list of apps names
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
 components:
   schemas:
     YakoAgent:

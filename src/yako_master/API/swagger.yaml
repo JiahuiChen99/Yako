@@ -30,6 +30,8 @@ x-tagGroups:
 paths:
   /alive:
     get:
+      tags:
+        - YakoMaster
       operationId: alive
       description: Checks YakoMaster availability
       responses:
@@ -39,6 +41,8 @@ paths:
           description: YakoMaster is down
   /deploy:
     post:
+      tags:
+        - YakoMaster
       operationId: deploy
       description: Uploads the application, finds the most suitable node according to the specsheet and deploys in
       responses:

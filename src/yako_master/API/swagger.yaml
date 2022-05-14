@@ -73,3 +73,14 @@ paths:
                   $ref: '#/components/schemas/YakoAgent'
         '400':
           description: Bad request, some requests params mighht be missing
+  /cluster:
+    get:
+      operationId: cluster
+      description: Get cluster information
+      responses:
+        '200':
+          description: Returns the cluster's current state
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/Response'

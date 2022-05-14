@@ -33,6 +33,10 @@ tags:
     x-displayName: The Response Model
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Response" />
+  - name: resterror_model
+    x-displayName: The REST Error Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/RestError" />
 x-tagGroups:
   - name: General
     tags:
@@ -44,6 +48,7 @@ x-tagGroups:
       - sysinfo_model
       - memory_model
       - response_model
+      - resterror_model
 paths:
   /alive:
     get:
@@ -188,3 +193,12 @@ components:
           $ref: '#/components/schemas/ServiceInfo'
         yako_agents:
           $ref: '#/components/schemas/ServiceInfo'
+    RestError:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+        error:
+          type: string

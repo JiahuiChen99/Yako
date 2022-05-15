@@ -64,61 +64,76 @@ func serve() {
 	if err != nil {
 		log.Fatalln("Could not create IoT YakoAgent Server ", err)
 	}
-	conn, err := ln.Accept()
-	if err != nil {
-		log.Fatalln("Await for connections error", err)
-	}
-	// TODO: Close listener on SIGINT
 	defer ln.Close()
 
-	// Wait for connections and process application deployment
-	appFrame := make([]byte, 1024)
-	appData := bytes.Buffer{}
-	reader := bufio.NewReader(conn)
 	for {
-		// TODO: Application name
-		// Start application transmission
-		nBytesRead, err := reader.Read(appFrame)
-		if err != nil && err != io.EOF {
-			log.Println("Frame dropped while transferring the application ", err)
+		conn, err := ln.Accept()
+		if err != nil {
+			log.Fatalln("Await for connections error", err)
 		}
-		if err == io.EOF {
-			// Store the application and spin it up
-			log.Println("Spinning the application up")
-			directory_util.WorkDir("yakoagentiot")
-			deployedApp, err := os.Create("/usr/yakoagentiot/" + "arxiu")
+		// TODO: Close listener on SIGINT
 
-			if err != nil {
-				log.Println(fmt.Sprintf("Could not create application file: %s", err))
-			}
-
-			// Write the binary application to the file system
-			_, err = appData.WriteTo(deployedApp)
-			if err != nil {
-				log.Println(fmt.Sprintf("Could not write application file: %s", err))
-			}
-
-			err = deployedApp.Chmod(0710)
-			if err != nil {
-				log.Println("Could not change application permissions")
-			}
-
-			// Close the application file descriptor after writing & chmoding
-			err = deployedApp.Close()
-			if err != nil {
-				log.Println("Error while closing the application file descriptor")
-			}
-
-			// Spin up the application
-			cmd := exec.Command("/usr/yakoagentiot/" + appName)
-			err = cmd.Start()
-			if err != nil {
-				log.Println("Error: Could not start", err)
-			} else {
-				log.Println("Application up - PID: ", cmd.Process.Pid)
-			}
+		appName := make([]byte, 256)
+		//readName := false
+		nameBytes := 0
+		// Read app name
+		nameBytes, err = conn.Read(appName)
+		if err != nil {
+			log.Println("Error while receiving app name", err)
+		} else {
+			fmt.Println("App name", string(appName[:nameBytes]))
 		}
-		appData.Write(appFrame[:nBytesRead])
+
+		// Wait for connections and process application deployment
+		appFrame := make([]byte, 1024)
+		appData := bytes.Buffer{}
+		reader := bufio.NewReader(conn)
+		for {
+			// Start application receptiion
+			nBytesRead, err := reader.Read(appFrame)
+			if err != nil && err != io.EOF {
+				log.Println("Frame dropped while transferring the application ", err)
+			}
+			if err == io.EOF {
+				// Store the application and spin it up
+				log.Println("Spinning the application up")
+				directory_util.WorkDir("yakoagentiot")
+				deployedApp, err := os.Create("/usr/yakoagentiot/" + string(appName[:nameBytes]))
+
+				if err != nil {
+					log.Println(fmt.Sprintf("Could not create application file: %s", err))
+				}
+
+				// Write the binary application to the file system
+				_, err = appData.WriteTo(deployedApp)
+				if err != nil {
+					log.Println(fmt.Sprintf("Could not write application file: %s", err))
+				}
+
+				err = deployedApp.Chmod(0710)
+				if err != nil {
+					log.Println("Could not change application permissions")
+				}
+
+				// Close the application file descriptor after writing & chmoding
+				err = deployedApp.Close()
+				if err != nil {
+					log.Println("Error while closing the application file descriptor")
+				}
+
+				// Spin up the application
+				cmd := exec.Command("/usr/yakoagentiot/" + string(appName[:nameBytes]))
+				err = cmd.Start()
+				if err != nil {
+					log.Println("Error: Could not start", err)
+				} else {
+					// TODO: Report the PID back to the YakoMaster
+					log.Println("Application up - PID: ", cmd.Process.Pid)
+				}
+				break
+			}
+			appData.Write(appFrame[:nBytesRead])
+		}
 	}
 }
 

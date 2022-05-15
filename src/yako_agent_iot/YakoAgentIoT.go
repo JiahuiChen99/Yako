@@ -77,7 +77,7 @@ func serve() {
 		//readName := false
 		nameBytes := 0
 		// Read app name
-		nameBytes, err = conn.Read(appName)
+		nameBytes, err = conn.Read(appName[:])
 		if err != nil {
 			log.Println("Error while receiving app name", err)
 		} else {

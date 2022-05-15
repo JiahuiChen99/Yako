@@ -3,6 +3,7 @@ package Controller
 import (
 	"container/heap"
 	"context"
+	"fmt"
 	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
@@ -196,6 +197,11 @@ func deployAppIoT(agentSocket string, appPath string, appName string) {
 	conn, err := net.Dial("tcp", agentSocket)
 	if err != nil {
 		log.Println("Could not dial the agent ", err)
+	}
+
+	// Send name
+	if _, err := conn.Write([]byte(appName)); err != nil {
+		fmt.Println("Could not send the app name")
 	}
 
 	// 1KB buffer

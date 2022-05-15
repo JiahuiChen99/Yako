@@ -52,7 +52,7 @@ func UploadApp(c *gin.Context) {
 	}
 
 	// Compute and find the best nodes to deploy the app
-	recommendedNodes := findYakoAgents(config)
+	recommendedNodes := findYakoAgents(config, iot)
 
 	// Check if automation is enabled
 	if autoDeploy := c.Query("autodeploy"); autoDeploy == "true" {
@@ -77,25 +77,46 @@ func UploadApp(c *gin.Context) {
 // yakoagents where the app could be deployed according to the
 // requested resources from the client
 // Default X = 3
-func findYakoAgents(config model.Config) []*model.YakoAgent {
+func findYakoAgents(config model.Config, iot bool) []*model.YakoAgent {
 	// Priority queue with max heap to rank higher the nodes
 	// with more brownie points
-	pq := make(model.PQNodes, len(zookeeper.ServicesRegistry))
+	agentsCount := 0
+	for agentID, _ := range zookeeper.ServicesRegistry {
+		if iot && string(agentID[0]) != "n" {
+			agentsCount++
+		} else if !iot && string(agentID[0]) == "n" {
+			agentsCount++
+		}
+	}
+	pq := make(model.PQNodes, agentsCount)
 
 	var browniePoints uint64
 	counter := 0
 	// Loop through all the available yakoagents, computes the
 	// brownie points and adds it to a priority queue
 	for agentID, agentInfo := range zookeeper.ServicesRegistry {
-		// Set brownie points to 0
-		browniePoints = 0
-		compliesWithCPUCores(agentInfo.ServiceInfo, config, &browniePoints)
-		compliesWithMemory(agentInfo.ServiceInfo, config, &browniePoints)
-		pq[counter] = &model.YakoAgent{
-			ID:            agentID,
-			BrowniePoints: browniePoints,
+		// Filter out the devices depending on the IoT field
+		if iot && string(agentID[0]) != "n" {
+			// Set brownie points to 0
+			browniePoints = 0
+			compliesWithCPUCores(agentInfo.ServiceInfo, config, &browniePoints)
+			compliesWithMemory(agentInfo.ServiceInfo, config, &browniePoints)
+			pq[counter] = &model.YakoAgent{
+				ID:            agentID,
+				BrowniePoints: browniePoints,
+			}
+			counter++
+		} else if !iot && string(agentID[0]) == "n" {
+			// Set brownie points to 0
+			browniePoints = 0
+			compliesWithCPUCores(agentInfo.ServiceInfo, config, &browniePoints)
+			compliesWithMemory(agentInfo.ServiceInfo, config, &browniePoints)
+			pq[counter] = &model.YakoAgent{
+				ID:            agentID,
+				BrowniePoints: browniePoints,
+			}
+			counter++
 		}
-		counter++
 	}
 	heap.Init(&pq)
 

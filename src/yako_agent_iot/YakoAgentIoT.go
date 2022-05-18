@@ -13,6 +13,8 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -31,6 +33,26 @@ var (
 	listener     net.Listener
 	client       mqtt.Client
 )
+
+// signalHandler Traps UNIX SIGINT, SIGTERM signals and processes them
+func signalHandler(signalChannel chan os.Signal) {
+	for {
+		// Receive the SIGNAL ID
+		sig := <-signalChannel
+		switch sig {
+		case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL:
+			log.Println("Shutting down YakoAgent (IoT)")
+			// Send disconnection topic
+			pubTopic(client, fmt.Sprintf("topic/%s/%s", AgentSocket, Disconnection), nil)
+			// Close MQTT client
+			client.Disconnect(uint(time.Second * 10))
+			// Close the listener
+			listener.Close()
+			// Shutdown YakoAgent gracefully with no errors
+			os.Exit(0)
+		}
+	}
+}
 
 func main() {
 	// Get IoT YakoAgent socket
@@ -52,6 +74,17 @@ func main() {
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		fmt.Println("Error while connecting to the MQTT broker.")
 	}
+
+	// UNIX signal channel for events
+	signalChannel := make(chan os.Signal, 1)
+	// Signals to trap
+	signal.Notify(signalChannel,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGKILL)
+
+	// Goroutine for signal processing
+	go signalHandler(signalChannel)
 
 	// Regular reports to the MQTT broker
 	go timedReport(client)

@@ -17,10 +17,11 @@ import (
 )
 
 const (
-	CPU     = "cpu"
-	GPU     = "gpu"
-	Memory  = "memory"
-	SysInfo = "sysinfo"
+	CPU           = "cpu"
+	GPU           = "gpu"
+	Memory        = "memory"
+	SysInfo       = "sysinfo"
+	Disconnection = "disconnection"
 )
 
 var (

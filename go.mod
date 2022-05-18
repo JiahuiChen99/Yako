@@ -3,6 +3,7 @@ module github.com/JiahuiChen99/Yako
 go 1.17
 
 require (
+	github.com/eclipse/paho.mqtt.golang v1.3.5
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-openapi/runtime v0.24.1
@@ -13,6 +14,7 @@ require (
 )
 
 require (
+	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect

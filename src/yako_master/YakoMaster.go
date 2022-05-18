@@ -6,6 +6,7 @@ import (
 	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
+	"github.com/JiahuiChen99/Yako/src/utils/mqtt"
 	"github.com/JiahuiChen99/Yako/src/utils/zookeeper"
 	"github.com/JiahuiChen99/Yako/src/yako_master/API"
 	"github.com/gin-contrib/cors"
@@ -99,6 +100,11 @@ func main() {
 	zookeeper.NewServiceChan = newService
 
 	go zookeeper.GetAllServiceAddresses()
+
+	// Connect to MQTT broker for IoT edge YakoAgents
+	mqttBrokerIp := os.Args[5]
+	mqttBrokerPort := os.Args[6]
+	mqtt.ConnectMqttBroker(mqttBrokerIp, mqttBrokerPort)
 
 	// YakoMaster working directory
 	directory_util.WorkDir("yakomaster")

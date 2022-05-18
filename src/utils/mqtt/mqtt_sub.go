@@ -11,21 +11,21 @@ import (
 )
 
 const (
-	CPU          = "cpu"
-	GPU          = "gpu"
-	Memory       = "memory"
-	SysInfo      = "sysinfo"
-	TopicCpu     = "topic/+/" + CPU
-	TopicGpu     = "topic/+/" + GPU
-	TopicMemory  = "topic/+/" + Memory
-	TopicSysInfo = "topic/+/" + SysInfo
+	CPU                = "cpu"
+	GPU                = "gpu"
+	Memory             = "memory"
+	SysInfo            = "sysinfo"
+	Disconnection      = "disconnection"
+	TopicCpu           = "topic/+/" + CPU
+	TopicGpu           = "topic/+/" + GPU
+	TopicMemory        = "topic/+/" + Memory
+	TopicSysInfo       = "topic/+/" + SysInfo
+	TopicDisconnection = "topic/+/" + Disconnection
 )
 
 var (
-	topics = []string{TopicCpu, TopicGpu, TopicMemory, TopicSysInfo}
+	topics = []string{TopicCpu, TopicGpu, TopicMemory, TopicSysInfo, TopicDisconnection}
 )
-
-// TODO: IoT YakoAgent publisher disconnection handling
 
 // ConnectMqttBroker connects to an MQTT Broker and returns the connection
 // YakoMaster to listen for subscribed channels

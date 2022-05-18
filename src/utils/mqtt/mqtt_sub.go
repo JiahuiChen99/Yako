@@ -112,6 +112,7 @@ func subToTopic(client mqtt.Client, topic string) {
 func updateRegistry(agentSocket string, data interface{}) {
 	// Add a new entry if it doesn't exist in the registry
 	if zookeeper.ServicesRegistry[agentSocket] == nil {
+		log.Println("New YakoAgent (IoT) at " + agentSocket)
 		var info model.ServiceInfo
 		switch data.(type) {
 		case []model.Cpu:

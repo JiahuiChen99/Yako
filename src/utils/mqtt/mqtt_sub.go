@@ -80,6 +80,9 @@ func messageHandler(client mqtt.Client, msg mqtt.Message) {
 			log.Println("Err", err)
 		}
 		updateRegistry(agentSocket, sysinfo)
+	case Disconnection:
+		delete(zookeeper.ServicesRegistry, agentSocket)
+		fmt.Println("Service at " + agentSocket + " has been disconnected")
 	}
 }
 

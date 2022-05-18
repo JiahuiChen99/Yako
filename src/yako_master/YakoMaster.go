@@ -71,6 +71,7 @@ func registerMasterSystemInfo() {
 		// Try to type cast
 		gInfo, _ := gpuInfo.([]model.Gpu)
 		zookeeper.MasterRegistry[zn_uuid] = &model.ServiceInfo{
+			Socket:  addr,
 			CpuList: cpuInfo.([]model.Cpu),
 			GpuList: gInfo,
 			Memory:  memInfo.(model.Memory),

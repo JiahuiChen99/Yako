@@ -27,6 +27,8 @@ var (
 	AgentSocket  = "" // IoT YakoAgent IP + Port
 	BrokerSocket = "" // MQTT Broker IP + Port
 	topics       = []string{CPU, GPU, Memory, SysInfo}
+	listener     net.Listener
+	client       mqtt.Client
 )
 
 func main() {
@@ -43,7 +45,7 @@ func main() {
 	// MQTT broker configuration
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(BrokerSocket)
-	client := mqtt.NewClient(opts)
+	client = mqtt.NewClient(opts)
 
 	// Connect to the broker
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
@@ -60,14 +62,15 @@ func main() {
 // serve starts a socket in listening mode and awaits for new deployment
 // connections.
 func serve() {
-	ln, err := net.Listen("tcp", AgentSocket)
+	var err error
+	listener, err = net.Listen("tcp", AgentSocket)
 	if err != nil {
 		log.Fatalln("Could not create IoT YakoAgent Server ", err)
 	}
-	defer ln.Close()
+	defer listener.Close()
 
 	for {
-		conn, err := ln.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			log.Fatalln("Await for connections error", err)
 		}

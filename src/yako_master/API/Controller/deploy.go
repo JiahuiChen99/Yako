@@ -3,6 +3,7 @@ package Controller
 import (
 	"container/heap"
 	"context"
+	"fmt"
 	"github.com/JiahuiChen99/Yako/src/grpc/yako"
 	"github.com/JiahuiChen99/Yako/src/model"
 	"github.com/JiahuiChen99/Yako/src/utils/directory_util"
@@ -11,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 )
@@ -42,16 +44,29 @@ func UploadApp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 
+	var iot bool
+	if c.Query("iot") == "true" {
+		iot = true
+	} else {
+		iot = false
+	}
+
 	// Compute and find the best nodes to deploy the app
-	recommendedNodes := findYakoAgents(config)
+	recommendedNodes := findYakoAgents(config, iot)
 
 	// Check if automation is enabled
 	if autoDeploy := c.Query("autodeploy"); autoDeploy == "true" {
 		// Auto-deploy the app to the best computed node
 		yakoAgentID := recommendedNodes[0].ID
 		log.Println("Autodeploying application to " + yakoAgentID)
-		deployStatus := deployApp(&zookeeper.ServicesRegistry[yakoAgentID].GrpcClient, appPath, file.Filename)
-		log.Println(deployStatus.Message)
+		if !iot {
+			// Deploy to a non-IoT agent
+			deployStatus := deployApp(&zookeeper.ServicesRegistry[yakoAgentID].GrpcClient, appPath, file.Filename)
+			log.Println(deployStatus.Message)
+		} else {
+			// Deploy to the best IoT agent
+			deployAppIoT(yakoAgentID, appPath, file.Filename)
+		}
 	}
 
 	// File uploaded and stored
@@ -62,25 +77,46 @@ func UploadApp(c *gin.Context) {
 // yakoagents where the app could be deployed according to the
 // requested resources from the client
 // Default X = 3
-func findYakoAgents(config model.Config) []*model.YakoAgent {
+func findYakoAgents(config model.Config, iot bool) []*model.YakoAgent {
 	// Priority queue with max heap to rank higher the nodes
 	// with more brownie points
-	pq := make(model.PQNodes, len(zookeeper.ServicesRegistry))
+	agentsCount := 0
+	for agentID, _ := range zookeeper.ServicesRegistry {
+		if iot && string(agentID[0]) != "n" {
+			agentsCount++
+		} else if !iot && string(agentID[0]) == "n" {
+			agentsCount++
+		}
+	}
+	pq := make(model.PQNodes, agentsCount)
 
 	var browniePoints uint64
 	counter := 0
 	// Loop through all the available yakoagents, computes the
 	// brownie points and adds it to a priority queue
 	for agentID, agentInfo := range zookeeper.ServicesRegistry {
-		// Set brownie points to 0
-		browniePoints = 0
-		compliesWithCPUCores(agentInfo.ServiceInfo, config, &browniePoints)
-		compliesWithMemory(agentInfo.ServiceInfo, config, &browniePoints)
-		pq[counter] = &model.YakoAgent{
-			ID:            agentID,
-			BrowniePoints: browniePoints,
+		// Filter out the devices depending on the IoT field
+		if iot && string(agentID[0]) != "n" {
+			// Set brownie points to 0
+			browniePoints = 0
+			compliesWithCPUCores(agentInfo.ServiceInfo, config, &browniePoints)
+			compliesWithMemory(agentInfo.ServiceInfo, config, &browniePoints)
+			pq[counter] = &model.YakoAgent{
+				ID:            agentID,
+				BrowniePoints: browniePoints,
+			}
+			counter++
+		} else if !iot && string(agentID[0]) == "n" {
+			// Set brownie points to 0
+			browniePoints = 0
+			compliesWithCPUCores(agentInfo.ServiceInfo, config, &browniePoints)
+			compliesWithMemory(agentInfo.ServiceInfo, config, &browniePoints)
+			pq[counter] = &model.YakoAgent{
+				ID:            agentID,
+				BrowniePoints: browniePoints,
+			}
+			counter++
 		}
-		counter++
 	}
 	heap.Init(&pq)
 
@@ -169,4 +205,43 @@ func deployApp(c *yako.NodeServiceClient, appPath string, appName string) *yako.
 	deployStatus, err = stream.CloseAndRecv()
 
 	return deployStatus
+}
+
+// deployAppIoT opens application binary file, splices it up into chunks of 1KB
+// and sends it to the IoT YakoAgent
+func deployAppIoT(agentSocket string, appPath string, appName string) {
+	file, err := os.Open(appPath)
+	if err != nil {
+		log.Println("Could not open the file")
+	}
+
+	conn, err := net.Dial("tcp", agentSocket)
+	if err != nil {
+		log.Println("Could not dial the agent ", err)
+	}
+
+	// Send name
+	if _, err := conn.Write([]byte(appName)); err != nil {
+		fmt.Println("Could not send the app name")
+	}
+
+	// 1KB buffer
+	buf := make([]byte, 1024)
+	for {
+		nBytesRead, err := file.Read(buf)
+		// End of File
+		if err == io.EOF {
+			conn.Close()
+			break
+		}
+
+		nBytesSent, err := conn.Write(buf[:nBytesRead])
+		if err != nil {
+			log.Println("Error while deploying the application ", err)
+		}
+
+		if nBytesRead != nBytesSent {
+			log.Println("Some bytes went missing during the application transmission")
+		}
+	}
 }

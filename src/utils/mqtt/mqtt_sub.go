@@ -11,21 +11,21 @@ import (
 )
 
 const (
-	CPU          = "cpu"
-	GPU          = "gpu"
-	Memory       = "memory"
-	SysInfo      = "sysinfo"
-	TopicCpu     = "topic/+/" + CPU
-	TopicGpu     = "topic/+/" + GPU
-	TopicMemory  = "topic/+/" + Memory
-	TopicSysInfo = "topic/+/" + SysInfo
+	CPU                = "cpu"
+	GPU                = "gpu"
+	Memory             = "memory"
+	SysInfo            = "sysinfo"
+	Disconnection      = "disconnection"
+	TopicCpu           = "topic/+/" + CPU
+	TopicGpu           = "topic/+/" + GPU
+	TopicMemory        = "topic/+/" + Memory
+	TopicSysInfo       = "topic/+/" + SysInfo
+	TopicDisconnection = "topic/+/" + Disconnection
 )
 
 var (
-	topics = []string{TopicCpu, TopicGpu, TopicMemory, TopicSysInfo}
+	topics = []string{TopicCpu, TopicGpu, TopicMemory, TopicSysInfo, TopicDisconnection}
 )
-
-// TODO: IoT YakoAgent publisher disconnection handling
 
 // ConnectMqttBroker connects to an MQTT Broker and returns the connection
 // YakoMaster to listen for subscribed channels
@@ -80,6 +80,9 @@ func messageHandler(client mqtt.Client, msg mqtt.Message) {
 			log.Println("Err", err)
 		}
 		updateRegistry(agentSocket, sysinfo)
+	case Disconnection:
+		delete(zookeeper.ServicesRegistry, agentSocket)
+		fmt.Println("Service at " + agentSocket + " has been disconnected")
 	}
 }
 
@@ -109,6 +112,7 @@ func subToTopic(client mqtt.Client, topic string) {
 func updateRegistry(agentSocket string, data interface{}) {
 	// Add a new entry if it doesn't exist in the registry
 	if zookeeper.ServicesRegistry[agentSocket] == nil {
+		log.Println("New YakoAgent (IoT) at " + agentSocket)
 		var info model.ServiceInfo
 		switch data.(type) {
 		case []model.Cpu:

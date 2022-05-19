@@ -15,12 +15,34 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
 	addr    = "" // Socket ip + port
 	zn_uuid = ""
 )
+
+// signalHandler Traps UNIX SIGINT, SIGTERM signals and processes them
+func signalHandler(signalChannel chan os.Signal) {
+	for {
+		// Receive the SIGNAL ID
+		sig := <-signalChannel
+		switch sig {
+		case syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL:
+			log.Println("Shutting down YakoMaster")
+
+			// Close all connections to YakoAgents gRPC Server
+			for _, agent := range zookeeper.ServicesRegistry {
+				agent.GrpcConn.Close()
+			}
+
+			// Shutdown YakoAgent gracefully with no errors
+			os.Exit(0)
+		}
+	}
+}
 
 func APIServer() {
 	// Default gin router with default middleware:
@@ -102,6 +124,17 @@ func main() {
 
 	go zookeeper.GetAllServiceAddresses()
 
+	// UNIX signal channel for events
+	signalChannel := make(chan os.Signal, 1)
+	// Signals to trap
+	signal.Notify(signalChannel,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGKILL)
+
+	// Goroutine for signal processing
+	go signalHandler(signalChannel)
+
 	// Connect to MQTT broker for IoT edge YakoAgents
 	mqttBrokerIp := os.Args[5]
 	mqttBrokerPort := os.Args[6]
@@ -155,6 +188,7 @@ func main() {
 			newServiceSocket.ServiceInfo.SysInfo = model.UnmarshallSysInfo(sysInfo)
 			newServiceSocket.ServiceInfo.Memory = model.UnmarshallMemory(memInfo)
 			newServiceSocket.GrpcClient = c
+			newServiceSocket.GrpcConn = cc
 		}
 	}
 }

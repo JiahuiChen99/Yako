@@ -1,6 +1,9 @@
 package model
 
-import "github.com/JiahuiChen99/Yako/src/grpc/yako"
+import (
+	"github.com/JiahuiChen99/Yako/src/grpc/yako"
+	"google.golang.org/grpc"
+)
 
 // ServiceInfo struct that represents the data transferred back to
 // the client side
@@ -23,4 +26,5 @@ type Response struct {
 type Agent struct {
 	ServiceInfo *ServiceInfo           `json:"info"`
 	GrpcClient  yako.NodeServiceClient `json:"-"`
+	GrpcConn    *grpc.ClientConn       `json:"-"`
 }

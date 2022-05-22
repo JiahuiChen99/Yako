@@ -17,6 +17,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 var (
@@ -122,6 +123,8 @@ func main() {
 	newService := make(chan string)
 	zookeeper.NewServiceChan = newService
 
+	go updateAgentsInformation()
+
 	go zookeeper.GetAllServiceAddresses()
 
 	// UNIX signal channel for events
@@ -189,6 +192,48 @@ func main() {
 			newServiceSocket.ServiceInfo.Memory = model.UnmarshallMemory(memInfo)
 			newServiceSocket.GrpcClient = c
 			newServiceSocket.GrpcConn = cc
+		}
+	}
+}
+
+// updateAgentsInformation schedules a timed job. By default, every 10 seconds YakoMaster will
+// ask all connected YakoAgents to report back
+func updateAgentsInformation() {
+	for {
+		// Sleep for 10 seconds
+		time.Sleep(10 * time.Second)
+		for agentID, agent := range zookeeper.ServicesRegistry {
+			var err error
+			var sysInfo *yako.SysInfo
+			var cpuInfo *yako.CpuList
+			var gpuInfo *yako.GpuList
+			var memInfo *yako.Memory
+
+			var gpuList []model.Gpu
+			var cpuList []model.Cpu
+
+			sysInfo, err = agent.GrpcClient.GetSystemInformation(context.Background(), &empty.Empty{})
+			cpuInfo, err = agent.GrpcClient.GetSystemCpuInformation(context.Background(), &empty.Empty{})
+			gpuInfo, err = agent.GrpcClient.GetSystemGpuInformation(context.Background(), &empty.Empty{})
+			if err != nil {
+				log.Println(err)
+			} else {
+				for _, gpu := range gpuInfo.GetGpuList() {
+					gpuList = append(gpuList, model.UnmarshallGPU(gpu))
+				}
+			}
+			memInfo, err = agent.GrpcClient.GetSystemMemoryInformation(context.Background(), &empty.Empty{})
+			for _, cpu := range cpuInfo.GetCpuList() {
+				cpuList = append(cpuList, model.UnmarshallCPU(cpu))
+			}
+
+			// Update service information to the cluster schema
+			if zookeeper.ServicesRegistry[agentID] != nil {
+				agent.ServiceInfo.CpuList = cpuList
+				agent.ServiceInfo.GpuList = gpuList
+				agent.ServiceInfo.SysInfo = model.UnmarshallSysInfo(sysInfo)
+				agent.ServiceInfo.Memory = model.UnmarshallMemory(memInfo)
+			}
 		}
 	}
 }

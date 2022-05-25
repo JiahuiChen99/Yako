@@ -11,7 +11,7 @@ build_master:
 	go build src/yako_master/YakoMaster.go
 
 run_agent:
-	go run src/yako_node/YakoAgent.go
+	./src/yako_node/YakoAgent $(ip) $(port) $(zk_ip) $(zk_port)
 
 build_agent:
 	go build src/yako_node/YakoAgent.go

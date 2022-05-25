@@ -5,7 +5,7 @@ clean:
 	rm src/grpc/pb/*.go
 
 run_master:
-	go run src/yako_master/YakoMaster.go
+	./src/yako_master/YakoMaster $(ip) $(port) $(zk_ip) $(zk_port) $(mqtt_ip) $(mqtt_port)
 
 build_master:
 	go build src/yako_master/YakoMaster.go

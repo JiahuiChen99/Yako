@@ -15,3 +15,9 @@ run_agent:
 
 build_agent:
 	go build src/yako_node/YakoAgent.go
+
+run_agent_iot:
+	./src/yako_agent_iot/YakoAgentIoT $(ip) $(port) $(mqtt_ip) $(mqtt_port)
+
+build_agent_iot:
+	go build src/yako_agent_iot/YakoAgentIoT.go

@@ -16,6 +16,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -203,6 +204,10 @@ func updateAgentsInformation() {
 		// Sleep for 10 seconds
 		time.Sleep(10 * time.Second)
 		for agentID, agent := range zookeeper.ServicesRegistry {
+			// Skip if is YakoAgent (IoT)
+			if !strings.HasPrefix(agentID, "n") {
+				continue
+			}
 			var err error
 			var sysInfo *yako.SysInfo
 			var cpuInfo *yako.CpuList

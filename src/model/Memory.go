@@ -47,7 +47,7 @@ func (m Memory) GetResources() (interface{}, error) {
 			switch scannerLine[0] {
 			case "MemTotal":
 				memory.Total = uint64(memoryQuantity)
-			case "MemFree":
+			case "MemAvailable":
 				memory.Free = uint64(memoryQuantity)
 			case "SwapTotal":
 				memory.TotalSwap = uint64(memoryQuantity)

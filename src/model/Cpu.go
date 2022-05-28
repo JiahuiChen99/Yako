@@ -86,13 +86,12 @@ func (c Cpu) GetResources() (interface{}, error) {
 				}
 
 				tmpCore.CoreID = uint64(coreID)
-
-			case "power management":
-				// Store data after parsing the last property
-				saveCPU(cpusList, cpusCount, cpuModel, cpuCores, socket, tmpCore)
 			}
 		}
 	}
+
+	// Store data after parsing the last property
+	saveCPU(cpusList, cpusCount, cpuModel, cpuCores, socket, tmpCore)
 
 	return cpusList, err
 }

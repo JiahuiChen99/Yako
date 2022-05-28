@@ -45,7 +45,9 @@ func signalHandler(signalChannel chan os.Signal) {
 			// Send disconnection topic
 			pubTopic(client, fmt.Sprintf("topic/%s/%s", AgentSocket, Disconnection), nil)
 			// Close MQTT client
-			client.Disconnect(uint(time.Second * 10))
+			var secs uint
+			secs = 10
+			client.Disconnect(uint(time.Second) * secs)
 			// Close the listener
 			listener.Close()
 			// Shutdown YakoAgent gracefully with no errors
@@ -213,7 +215,9 @@ func timedReport(client mqtt.Client) {
 			pubTopic(client, topic, data)
 		}
 		// Sleep for 10 seconds
-		time.Sleep(10 * time.Second)
+		var secs time.Duration
+		secs = 10
+		time.Sleep(secs * time.Second)
 	}
 }
 

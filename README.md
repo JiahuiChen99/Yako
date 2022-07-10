@@ -89,3 +89,23 @@ Run the following command to start mosquitto broker with the configuration file.
 ```shell
 mosquitto -c mosquitto.conf
 ```
+
+### YakoMaster
+The orchestrator itself accepts a total of 6 arguments.
+
+| Argument  | Description                |
+| --------- | ---------------            |
+| ip        | device IP                  |
+| port      | service port               |
+| zk_ip     | Zookeeper IP               |
+| zk_port   | Zookeeper port             |
+| mqtt_ip   | mosquitto MQTT broker IP   |
+| mqtt_port | mosquitto MQTT broker port |
+
+```shell
+# Makefile rule
+make run_master ip=<IP> port=<Port> zk_ip=<ZK IP> zk_port=<ZK Port> mqtt_ip=<MQTT IP> mqtt_port=<MQTT Port>
+
+# Manual
+/YakoMaster <IP> <Port> <ZK IP> <ZK Port> <MQTT IP> <MQTT Port>
+```

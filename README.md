@@ -2,7 +2,7 @@
 Yako an orchestrator that determines the viability and handles the deployment of computing services into a multi-layered distributed heterogeneous environment with support for traditional and IoT computing nodes.
 The project is powered by Golang, Apache Zookeeper, gRPC and MQTT.
 
-YakoUI is the client to interact with the Yako platform.
+[YakoUI](https://github.com/JiahuiChen99/YakoUI) is the client to interact with the Yako platform.
 
 This project is part of the [Heterogeneous Computing Farm](https://github.com/JiahuiChen99/Heterogeneous-Computing-Farm), my Bachelor of Science in Computer Science senior thesis.
 For more in depth explanation please refer to the [senior thesis paper](https://github.com/JiahuiChen99/Heterogeneous-Computing-Farm/blob/main/Heterogeneous%20Computing%20Farm.pdf).

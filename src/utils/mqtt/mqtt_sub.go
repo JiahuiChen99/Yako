@@ -124,6 +124,8 @@ func updateRegistry(agentSocket string, data interface{}) {
 		case model.SysInfo:
 			info.SysInfo = data.(model.SysInfo)
 		}
+		// Save the socket
+		info.Socket = agentSocket
 		// Save the information
 		zookeeper.ServicesRegistry[agentSocket] = &model.Agent{
 			ServiceInfo: &info,

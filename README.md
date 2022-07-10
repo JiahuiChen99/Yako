@@ -59,3 +59,23 @@ Steps to run the Yako platform:
 3. [Run YakoMaster](https://github.com/JiahuiChen99/Yako#)
 4. [Run YakoAgent](https://github.com/JiahuiChen99/Yako#)
 5. [Run YakoAgent (IoT)](https://github.com/JiahuiChen99/Yako#)
+
+### Service Registry
+Yako uses a Service Registry to keep track of the active available nodes within the cluster. This functionality is provided by Apache Zookeeper.
+A configuration file is provided in **src/utils/zookeeper/zoo.cnf**.
+
+
+To run or stop zookeeper, run with the following commands:
+
+```shell
+# If ZK is registered to the path
+zkServer start
+zkServer stop
+
+# Otherwise go to the folder where ZK is installed
+./zkServer start
+./zkServer stop
+
+# ZK also provides a CLI tool to interact with
+./zkCli
+```

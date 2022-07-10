@@ -127,3 +127,21 @@ make run_agent ip=<IP> port=<Port> zk_ip=<ZK IP> zk_port=<ZK Port>
 # Manual
 /YakoAgent <IP> <Port> <ZK IP> <ZK Port>
 ```
+
+### YakoAgent (IoT)
+To run the agent for IoT devices, four arguments must be assigned:
+
+| Argument  | Description                |
+| --------- | -------------------------- |
+| ip        | device IP                  |
+| port      | service port               |
+| mqtt_ip   | mosquitto MQTT broker IP   |
+| mqtt_port | mosquitto MQTT broker port |
+
+```shell
+# Makefile rule
+make run_agent_iot ip=<IP> port=<Port> mqtt_ip=<MQTT IP> mqtt_port=<MQTT Port>
+
+# Manual
+./YakoAgentIoT <IP> <Port> <MQTT IP> <MQTT Port>
+```

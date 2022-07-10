@@ -109,3 +109,21 @@ make run_master ip=<IP> port=<Port> zk_ip=<ZK IP> zk_port=<ZK Port> mqtt_ip=<MQT
 # Manual
 /YakoMaster <IP> <Port> <ZK IP> <ZK Port> <MQTT IP> <MQTT Port>
 ```
+
+### YakoAgent
+To run the agent for computing nodes, four arguments must be assigned:
+
+| Argument | Description    |
+| -------- | -------------- |
+| ip       | device IP      |
+| port     | service port   |
+| zk_ip    | Zookeeper IP   |
+| zk_port  | Zookeeper port |
+
+```shell
+# Makefile rule
+make run_agent ip=<IP> port=<Port> zk_ip=<ZK IP> zk_port=<ZK Port>
+
+# Manual
+/YakoAgent <IP> <Port> <ZK IP> <ZK Port>
+```

@@ -9,11 +9,12 @@ For more in depth explanation please refer to the [senior thesis paper](https://
 
 ## 🧰 Prerequisites
 
-- [Golang v1.17.x](https://go.dev/)
+- [Golang v1.17.x](https://go.dev/) or higher
 - [Make](https://www.gnu.org/software/make/manual/make.html)
 - [Apache Zookeeper](https://zookeeper.apache.org/)
 - [gRPC](https://grpc.io/)
 - [Protocol buffers (Protobuf)](https://developers.google.com/protocol-buffers)
+- [Mosquitto (MQTT Broker)](https://mosquitto.org/)
 
 ## ⚙ Installation
 Make sure that the correct go version is installed in your system by running `go version`.
@@ -33,4 +34,4 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 ```
 
 Further information can be retrieved from the official Go gRPC quickstart guide
-Follow https://grpc.io/docs/languages/go/quickstart/
+Follow https://grpc.io/docs/languages/go/quickstart/.

@@ -54,11 +54,11 @@ make build_agent_iot
 
 Steps to run the Yako platform:
 
-1. [Run Apache Zookeeper](https://github.com/JiahuiChen99/Yako#)
-2. [Run mosquitto MQTT Broker](https://github.com/JiahuiChen99/Yako#)
-3. [Run YakoMaster](https://github.com/JiahuiChen99/Yako#)
-4. [Run YakoAgent](https://github.com/JiahuiChen99/Yako#)
-5. [Run YakoAgent (IoT)](https://github.com/JiahuiChen99/Yako#)
+1. [Run Apache Zookeeper](https://github.com/JiahuiChen99/Yako#service-registry)
+2. [Run mosquitto MQTT Broker](https://github.com/JiahuiChen99/Yako#mqtt-broker)
+3. [Run YakoMaster](https://github.com/JiahuiChen99/Yako#yakomaster)
+4. [Run YakoAgent](https://github.com/JiahuiChen99/Yako#yakoagent)
+5. [Run YakoAgent (IoT)](https://github.com/JiahuiChen99/Yako#yakoagent-iot)
 
 ### Service Registry
 Yako uses a Service Registry to keep track of the active available nodes within the cluster. This functionality is provided by Apache Zookeeper.

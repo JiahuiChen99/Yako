@@ -1,0 +1,20 @@
+// cpu.proto
+syntax = "proto3";
+package yako;
+option go_package = "yako/";
+
+message Core {
+  uint64 Processor = 1;
+  uint64 CoreID = 2;
+}
+
+message Cpu {
+  string CpuName = 1;
+  uint64 CpuCores = 2;
+  uint64 Socket = 3;
+  repeated Core Cores = 4;
+}
+
+message CpuList {
+  repeated Cpu CpuList = 1;
+}

@@ -1,0 +1,248 @@
+openapi: 3.0.0
+info:
+  title: YakoAPI
+  description: An API to interact with YakoMaster and the Yako platform
+  version: 1.0.0
+  contact:
+    name: Jiahui Chen
+    email: Jiahui1@hotmail.es
+    url: https://github.com/JiahuiChen99/Yako
+externalDocs:
+  description: Find out how to run the Yako plaftorm
+  url: 'https://github.com/JiahuiChen99/Yako#yako'
+tags:
+  - name: YakoMaster
+    description: All resources to interact with YakoMaster
+  - name: cpu_model
+    x-displayName: The CPU Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/CPU" />
+  - name: gpu_model
+    x-displayName: The GPU Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/GPU" />
+  - name: sysinfo_model
+    x-displayName: The System Information Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SysInfo" />
+  - name: memory_model
+    x-displayName: The Memory Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Memory" />
+  - name: response_model
+    x-displayName: The Response Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Response" />
+  - name: resterror_model
+    x-displayName: The REST Error Model
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/RestError" />
+x-tagGroups:
+  - name: General
+    tags:
+      - YakoMaster
+  - name: Models
+    tags:
+      - cpu_model
+      - gpu_model
+      - sysinfo_model
+      - memory_model
+      - response_model
+      - resterror_model
+paths:
+  /alive:
+    get:
+      tags:
+        - YakoMaster
+      operationId: alive
+      description: Checks YakoMaster availability
+      responses:
+        '200':
+          description: YakoMaster is alive
+        default:
+          description: YakoMaster is down
+  /deploy:
+    post:
+      tags:
+        - YakoMaster
+      operationId: deploy
+      description: Uploads the application, finds the most suitable node according to the specsheet and deploys in
+      parameters:
+        - name: autodeploy
+          schema:
+            type: boolean
+          in: query
+          required: true
+        - name: iot
+          schema:
+            type: boolean
+          in: query
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Returns top 3 best nodes with its brownie points.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/YakoAgent'
+        '400':
+          description: Bad request, some request params mighht be missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestError'
+        '500':
+          description: Could not save and spin the up the application
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestError'
+  /cluster:
+    get:
+      tags:
+        - YakoMaster
+      operationId: cluster
+      description: Get cluster information
+      responses:
+        '200':
+          description: Returns the cluster's current state
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Response'
+  /cluster/apps:
+    get:
+      tags:
+        - YakoMaster
+      operationId: clusterApps
+      description: Get applications list that have been uploaded to the system
+      responses:
+        '200':
+          description: Returns a list of apps names
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+components:
+  schemas:
+    YakoAgent:
+      type: object
+      properties:
+        id:
+          type: string
+        brownie_points:
+          type: number
+          format: int64
+    ServiceInfo:
+      type: object
+      properties:
+        socket:
+          type: string
+        sys_info:
+          $ref: '#/components/schemas/SysInfo'
+        cpu_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/CPU'
+        gpu_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/GPU'
+        memory:
+          $ref: '#/components/schemas/Memory'
+    CPU:
+      type: object
+      properties:
+        cpuName:
+          type: string
+        cpuCores:
+          type: integer
+          format: int64
+        socket:
+          type: integer
+          format: int64
+        cores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Core'
+    Core:
+      type: object
+      properties:
+        processor:
+          type: integer
+          format: int64
+        coreID:
+          type: integer
+          format: int64
+    GPU:
+      type: object
+      properties:
+        gpuName:
+          type: string
+        gpuID:
+          type: string
+        busID:
+          type: string
+        IRQ:
+          type: integer
+          format: int64
+        major:
+          type: integer
+          format: int64
+        minor:
+          type: integer
+          format: int64
+    SysInfo:
+      type: object
+      properties:
+        sys_name:
+          type: string
+        node_nme:
+          type: string
+        release:
+          type: string
+        version:
+          type: string
+        machine:
+          type: string
+    Memory:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        free:
+          type: integer
+          format: int64
+        swap:
+          type: integer
+          format: int64
+        freeSwap:
+          type: integer
+          format: int64
+    Response:
+      type: object
+      properties:
+        yako_masters:
+          $ref: '#/components/schemas/ServiceInfo'
+        yako_agents:
+          $ref: '#/components/schemas/ServiceInfo'
+    RestError:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+        error:
+          type: string

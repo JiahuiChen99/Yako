@@ -79,3 +79,13 @@ zkServer stop
 # ZK also provides a CLI tool to interact with
 ./zkCli
 ```
+
+### MQTT Broker
+Yako platform uses MQTT protocol that provides a publish/subscribe pattern to interact with YakoAgent (IoT) devices. The broker used for this purpose Mosquitto
+A configuration file is located in **src/utils/mqtt/mosquitto.conf**.
+
+Run the following command to start mosquitto broker with the configuration file.
+
+```shell
+mosquitto -c mosquitto.conf
+```

@@ -49,3 +49,13 @@ make build_agent
 # Builds YakoAgent (IoT)
 make build_agent_iot
 ````
+
+## 🚀️ Execution
+
+Steps to run the Yako platform:
+
+1. [Run Apache Zookeeper](https://github.com/JiahuiChen99/Yako#)
+2. [Run mosquitto MQTT Broker](https://github.com/JiahuiChen99/Yako#)
+3. [Run YakoMaster](https://github.com/JiahuiChen99/Yako#)
+4. [Run YakoAgent](https://github.com/JiahuiChen99/Yako#)
+5. [Run YakoAgent (IoT)](https://github.com/JiahuiChen99/Yako#)

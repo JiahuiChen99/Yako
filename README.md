@@ -35,3 +35,17 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 
 Further information can be retrieved from the official Go gRPC quickstart guide
 Follow https://grpc.io/docs/languages/go/quickstart/.
+
+
+Download and install golang project dependencies with `go mod tidy`. And run the following 3 Makefile rules to build the software.
+
+```shell
+# Builds YakoMaster
+make build_master
+
+# Builds YakoMaster
+make build_agent
+
+# Builds YakoAgent (IoT)
+make build_agent_iot
+````
